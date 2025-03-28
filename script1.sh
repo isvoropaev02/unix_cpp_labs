@@ -1,5 +1,5 @@
 #!/bin/bash
-dt=$(date +%F_%T)
+dt=$(date +%Y%m%d%H%M%S)
 git checkout stg
 git merge dev
 git commit -m "merged with dev"
