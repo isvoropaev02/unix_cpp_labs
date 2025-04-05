@@ -2,7 +2,7 @@ from  timeit import timeit
 from random import random
 
 def measure_time(x, num_loops):
-    time = timeit(stmt='x ** 2 - x ** 2 + x ** 4 - x ** 5 + x + x',
+    time = timeit(stmt='x ** 2 - x ** 2 + x * 4 - x * 5 + x + x',
                   globals={'x': x}, number=num_loops)
     return time
 

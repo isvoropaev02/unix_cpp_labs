@@ -1,5 +1,4 @@
 #include <iostream>
-#include <cmath>
 #include <string>
 #include <vector>
 #include <random>
@@ -11,7 +10,7 @@ double measure_time(double x, size_t num_loops)
     clock_t time_start = clock();
     for (size_t j_loop = 0; j_loop < num_loops; j_loop++)
     {
-        val = pow(x, 2) - pow(x, 2) + pow(x, 4) - pow(x, 5) + x + x;
+        val = x * x - x * x + x * 4 - x * 5 + x + x;
     }
     clock_t time_end = clock();
     return (double(time_end - time_start) / CLOCKS_PER_SEC);
