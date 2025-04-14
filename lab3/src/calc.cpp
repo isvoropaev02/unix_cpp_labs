@@ -22,10 +22,11 @@ int main(int argc, char const **argv)
         }
         case '^':
         {
-            double ans{1};
             int p = int(x2);
-            assert(p >= 0);
-            for (int i = 0; i < p; i++) ans *= x1;
+            double ans{1};
+            double coeff = p >= 0 ? x1 : ((double)1 / x1);
+            int abs_p = p >= 0 ? p : -p;
+            for (int i = 0; i < abs_p; i++) ans *= coeff;
             std:: cout << x1 << " ^ " << p << " = " << ans << "\n";
             break;
         }
