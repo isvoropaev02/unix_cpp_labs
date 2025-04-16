@@ -60,4 +60,14 @@ lab4/build/thrd_parallel.exe
 
 С помощью процессов выполнить параллельные вычисления из задания 1. (Вывести длительность выполнения всех 10 000 итераций и 100 000 итераций в сек. в разбивке по шагам вычислений 1, 2 и 3)
 
+Реализованная программа находится в файле [`lab4/src/proc_parallel.cpp`](../src/proc_parallel.cpp)
+
+Компиляция и запуск:
+
+```
+g++ -o lab4/build/proc_parallel.exe lab4/src/proc_parallel.cpp
+lab4/build/proc_parallel.exe
+```
+Идея кода взята [отсюда](https://stackoverflow.com/questions/48788344/c-pipe-to-modify-input-file-with-multiple-programs) и [отсюда](https://parallel.uran.ru/book/export/html/464).
+
 ## Вывод
