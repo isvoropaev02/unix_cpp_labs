@@ -35,6 +35,13 @@ g++ -o lab3/build/calc.exe lab3/src/calc.cpp
 lab3/build/calc.exe <value1> <operation> <value2>
 ```
 
+Пример вывода программы:
+
+```
+$ lab3/build/calc.exe 5.3 - 6.8
+5.3 - 6.8 = -1.5
+```
+
 NOTE: При использовании операции `^` второй аргумент ожидается положительным целочисленным. В случае подачи числа с ненулевой частью после запятой, она будет опущена.
 
 Полезные примеры обработки аргументов функции `main` находятся по [ссылке](https://www.programiz.com/cpp-programming/string-float-conversion).
@@ -63,6 +70,27 @@ lab3/build/hanoi_tower.exe
 Схема рекурентного решения зхадачи:
 
 ![Диаграмма решения](image-1.png)
+
+Пример вывода программы для $n=4$:
+
+```
+Number of steps: 15
+Move disk 1 from pin 1 to pin 2
+Move disk 2 from pin 1 to pin 3
+Move disk 1 from pin 2 to pin 3
+Move disk 3 from pin 1 to pin 2
+Move disk 1 from pin 3 to pin 1
+Move disk 2 from pin 3 to pin 2
+Move disk 1 from pin 1 to pin 2
+Move disk 4 from pin 1 to pin 3
+Move disk 1 from pin 2 to pin 3
+Move disk 2 from pin 2 to pin 1
+Move disk 1 from pin 3 to pin 1
+Move disk 3 from pin 2 to pin 3
+Move disk 1 from pin 1 to pin 2
+Move disk 2 from pin 1 to pin 3
+Move disk 1 from pin 2 to pin 3
+```
 
 ## Задание 3
 
