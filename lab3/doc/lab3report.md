@@ -67,6 +67,8 @@ NOTE: При использовании операции `^` второй арг
 g++ -o lab3/build/hanoi_tower.exe lab3/src/hanoi_tower.cpp
 lab3/build/hanoi_tower.exe
 ```
+Идея решения задачи взята отсюда - https://www.youtube.com/watch?v=rFuQCd4RvI0.
+
 Схема рекурентного решения зхадачи:
 
 ![Диаграмма решения](image-1.png)
