@@ -1,12 +1,13 @@
 #include <vector>
 #include <string>
 
-class parser
+class Parser
 {
 private:
-    std::vector<std::string> tokenize_line();
+    std::vector<std::vector<std::string>> tokenize_line(const std::string& line);
+    size_t line_num_{0};
 public:
-    parser() = default;
-    ~parser() = default;
-    std::vector<std::vector<std::string>> process();
+    Parser() = default;
+    ~Parser() = default;
+    std::vector<std::vector<std::vector<std::string>>> process();
 };

@@ -1,10 +1,17 @@
-#include <string>
-#include <stdexcept>
-#include <ctime>
-#include <iostream>
+#include "io_handler/parser.h"
 
-static char OUTPUT{'c'};
-static std::string FILE_PATH{""};
+#include <string>
+#include <vector>
+#include <stdexcept>
+#include <iostream>
+#include <fstream>
+#include <bits/stdc++.h>
+
+void redirect_cout_to_file(const std::string& filename)
+{
+    static std::ofstream out(filename, std::ios::app);
+    std::cout.rdbuf(out.rdbuf());
+}
 
 int main(int argc, char const *argv[])
 {
@@ -13,16 +20,30 @@ int main(int argc, char const *argv[])
     case 1:
         break;
     case 2:
-        FILE_PATH = std::string(argv[1]);
-        OUTPUT = 'f';
+        redirect_cout_to_file(std::string(argv[1]));
         break;
     default:
         throw std::invalid_argument("Only 1 optional CLI argument is supported (<OUTPUT_FILE_PATH>)\n");
         break;
     }
-    clock_t time_start = clock();
-    // main code
-    clock_t time_end = clock();
-    std::cout << "Execution time: " << double(time_end - time_start) / CLOCKS_PER_SEC << "\n";
+    std::cout << "here\n";
+    Parser parser;
+    auto commands = parser.process();
+    for (size_t i = 0; i < commands.size(); i++)
+    {
+        std::cout << "line " << i << "\n";
+        auto commands_line = commands[i];
+        for (size_t j = 0; j < commands_line.size(); j++)
+        {
+            std::cout << "command " << j << "\n";
+            auto comand_j = commands_line[j];
+            for (size_t k = 0; k < comand_j.size(); k++)
+            {
+                std::cout << comand_j[k] << " ";
+            }
+            std::cout << "\n";
+        }
+        std::cout << "\n";
+    }
     return 0;
 }
