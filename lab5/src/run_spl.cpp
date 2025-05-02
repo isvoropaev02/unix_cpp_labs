@@ -1,4 +1,4 @@
-#include "io_handler/parser.h"
+#include "parser/parser.h"
 
 #include <string>
 #include <vector>
@@ -26,24 +26,9 @@ int main(int argc, char const *argv[])
         throw std::invalid_argument("Only 1 optional CLI argument is supported (<OUTPUT_FILE_PATH>)\n");
         break;
     }
-    std::cout << "here\n";
     Parser parser;
     auto commands = parser.process();
-    for (size_t i = 0; i < commands.size(); i++)
-    {
-        std::cout << "line " << i << "\n";
-        auto commands_line = commands[i];
-        for (size_t j = 0; j < commands_line.size(); j++)
-        {
-            std::cout << "command " << j << "\n";
-            auto comand_j = commands_line[j];
-            for (size_t k = 0; k < comand_j.size(); k++)
-            {
-                std::cout << comand_j[k] << " ";
-            }
-            std::cout << "\n";
-        }
-        std::cout << "\n";
-    }
+    // Core core;
+    // core.process(commands);
     return 0;
 }

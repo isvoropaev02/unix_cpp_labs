@@ -43,7 +43,7 @@ std::vector<std::vector<std::vector<std::string>>> Parser::process()
         line_num_++;
         std::string line;
         std::getline(std::cin, line);
-        if (line.size() == 1 && line[0] == '!') return all_commands;
+        if (line.size() == 1 && line[0] == '!') break;
         all_commands.push_back(tokenize_line(line));
     }
     return all_commands;
