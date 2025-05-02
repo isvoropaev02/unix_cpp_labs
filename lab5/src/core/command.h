@@ -1,6 +1,5 @@
 #include <vector>
-#include "core.h"
-#include<iostream>
+#include <iostream>
 #include <unordered_map>
 #include <string>
 #include <stdexcept>
@@ -86,23 +85,29 @@ static std::unordered_map<std::string, Variable> VARIABLES;
 
 class IExpression
 {
-public:
+protected:
+    std::vector<std::string> tok_line_;
     virtual void check_syntaxis() = 0;
+public:
     virtual void run() = 0;
+    IExpression(const std::vector<std::string>& tok_line);
+    virtual ~IExpression() = default;
 };
+
+IExpression::IExpression(const std::vector<std::string>& tok_line) : tok_line_(tok_line) {}
 
 class CreateVariable : public IExpression
 {
 private:
     void check_syntaxis() override;
-    std::vector<std::string> tok_line_;
+    // std::vector<std::string> tok_line_;
 public:
     CreateVariable(const std::vector<std::string>& tok_line);
     ~CreateVariable() = default;
     void run() override;
 };
 
-CreateVariable::CreateVariable(const std::vector<std::string>& tok_line) : tok_line_(tok_line) {}
+CreateVariable::CreateVariable(const std::vector<std::string>& tok_line) : IExpression(tok_line) {}
 
 void CreateVariable::check_syntaxis()
 {
@@ -128,17 +133,14 @@ void CreateVariable::run()
 class Print : public IExpression
 {
 private:
-    void print_to_file();
-    void print_to_console();
     void check_syntaxis() override;
-    std::vector<std::string> tok_line_;
 public:
     Print(const std::vector<std::string>& tok_line);
     ~Print() = default;
     void run() override;
 };
 
-Print::Print(const std::vector<std::string>& tok_line) : tok_line_(tok_line) {}
+Print::Print(const std::vector<std::string>& tok_line) : IExpression(tok_line) {}
 
 void Print::check_syntaxis()
 {
