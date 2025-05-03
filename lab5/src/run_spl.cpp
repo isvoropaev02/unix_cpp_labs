@@ -1,4 +1,5 @@
 #include "parser/parser.h"
+#include "core/core.h"
 
 #include <string>
 #include <vector>
@@ -27,8 +28,8 @@ int main(int argc, char const *argv[])
         break;
     }
     Parser parser;
-    auto commands = parser.process();
-    // Core core;
-    // core.process(commands);
+    const auto commands = parser.process();
+    Core core(commands);
+    core.process();
     return 0;
 }
