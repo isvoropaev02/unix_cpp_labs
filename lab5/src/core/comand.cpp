@@ -1,21 +1,13 @@
-#include <vector>
-#include <iostream>
-#include <unordered_map>
-#include <string>
-#include <stdexcept>
+#include "comand.h"
 
-struct Variable
-{
-    int val_int_{0};
-    float val_flt_{0.0};
-    std::string type_{"flt"};
-    Variable(const std::string& val="0", const std::string& type="flt");
-    Variable(Variable& other);
-    ~Variable() = default;
-};
+#include <stdexcept>
+#include <iostream>
+#include <mutex>
+
+std::mutex cout_mtx;
+
 
 Variable::Variable(const std::string& val, const std::string& type) : type_(type), val_flt_(std::stof(val)), val_int_((int)val_flt_) {}
-
 Variable::Variable(Variable& other) : val_int_(other.val_int_), val_flt_(other.val_flt_), type_(other.type_) {}
 
 Variable calculate_expr(const std::string& bop, Variable& var1, Variable& var2)
@@ -78,34 +70,10 @@ Variable calculate_expr(const std::string& bop, Variable& var1, Variable& var2)
             throw std::runtime_error("No such binary operation: " + bop + "\n");
             break;
     }
+    return out;
 }
 
-static std::unordered_map<std::string, Variable> VARIABLES;
-
-
-class IExpression
-{
-protected:
-    std::vector<std::string> tok_line_;
-    virtual void check_syntaxis() = 0;
-public:
-    virtual void run() = 0;
-    IExpression(const std::vector<std::string>& tok_line);
-    virtual ~IExpression() = default;
-};
-
 IExpression::IExpression(const std::vector<std::string>& tok_line) : tok_line_(tok_line) {}
-
-class CreateVariable : public IExpression
-{
-private:
-    void check_syntaxis() override;
-    // std::vector<std::string> tok_line_;
-public:
-    CreateVariable(const std::vector<std::string>& tok_line);
-    ~CreateVariable() = default;
-    void run() override;
-};
 
 CreateVariable::CreateVariable(const std::vector<std::string>& tok_line) : IExpression(tok_line) {}
 
@@ -122,39 +90,30 @@ void CreateVariable::check_syntaxis()
      }
 }
 
-void CreateVariable::run()
+void CreateVariable::run(std::unordered_map<std::string, Variable>& variables, const size_t thread_id)
 {
     check_syntaxis();
     Variable new_var(tok_line_[3], tok_line_[0]);
-    VARIABLES.insert({tok_line_[1], new_var});
+    variables.insert_or_assign(tok_line_[1], new_var);
 }
-
-
-class Print : public IExpression
-{
-private:
-    void check_syntaxis() override;
-public:
-    Print(const std::vector<std::string>& tok_line);
-    ~Print() = default;
-    void run() override;
-};
 
 Print::Print(const std::vector<std::string>& tok_line) : IExpression(tok_line) {}
 
 void Print::check_syntaxis()
 {
     if (tok_line_.size() != 2) throw std::invalid_argument("Error in printing: Incorrect number of arguments\n");
-    if (auto search = VARIABLES.find(tok_line_[1]); search == VARIABLES.end())
+}
+
+void Print::run(std::unordered_map<std::string, Variable>& variables, const size_t thread_id)
+{
+    check_syntaxis();
+    if (auto search = variables.find(tok_line_[1]); search == variables.end())
     {
         throw std::invalid_argument("Error in printing: No such variable" + tok_line_[1] + "\n");
     }
-}
-
-void Print::run()
-{
-    check_syntaxis();
-    Variable tmp = VARIABLES[tok_line_[1]];
+    Variable tmp = variables[tok_line_[1]];
     auto val = (tmp.type_ == "flt") ? tmp.val_flt_ : tmp.val_int_;
-    std::cout << tok_line_[1] << " : " << val << tmp.type_ << "\n";
+    cout_mtx.lock();
+    std::cout << ("[THREAD " + std::to_string(thread_id) + "] " + tok_line_[1] + " : " + std::to_string(val) + " (" + tmp.type_ +")\n");
+    cout_mtx.unlock();
 }

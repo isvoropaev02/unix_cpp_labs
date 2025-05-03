@@ -8,6 +8,7 @@ add_executable(run_spl
     src/run_spl.cpp
     src/parser/parser.cpp
     src/core/core.cpp
+    src/core/comand.cpp
 )
 
 target_include_directories(run_spl PRIVATE
