@@ -23,19 +23,17 @@ void Core::run_task(const size_t id)
         {
             CreateVariable new_var(task[i_func]);
             new_var.run(variables, id);
-            // cout_mtx.lock();
-            // std::cout << ("[THREAD " + std::to_string(id) + "] " + current_comand + "\n");
-            // cout_mtx.unlock();
         }
         else if (current_comand == "print")
         {
             Print new_print(task[i_func]);
             new_print.run(variables, id);
-            // cout_mtx.lock();
-            // std::cout << ("[THREAD " + std::to_string(id) + "] " + current_comand + "\n");
-            // cout_mtx.unlock();
         }
-        else if (current_comand == "expr") continue;
+        else if (current_comand == "expr")
+        {
+            Expression new_expr(task[i_func]);
+            new_expr.run(variables, id);
+        }
         else if (current_comand == "for") continue;
         else throw std::invalid_argument("No such comand: " + current_comand + " in line " + std::to_string(id) +"\n");
     }
