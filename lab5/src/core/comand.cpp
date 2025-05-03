@@ -7,7 +7,7 @@
 std::mutex cout_mtx;
 
 
-Variable::Variable(const std::string& val, const std::string& type) : type_(type), val_flt_(std::stof(val)), val_int_((int)val_flt_) {}
+Variable::Variable(const std::string& val, const std::string& type) : type_(type), val_flt_(std::stof(val)), val_int_((int)std::stof(val)) {}
 Variable::Variable(Variable& other) : val_int_(other.val_int_), val_flt_(other.val_flt_), type_(other.type_) {}
 
 Variable calculate_expr(const std::string& bop, Variable& var1, Variable& var2)
@@ -112,8 +112,16 @@ void Print::run(std::unordered_map<std::string, Variable>& variables, const size
         throw std::invalid_argument("Error in printing: No such variable" + tok_line_[1] + "\n");
     }
     Variable tmp = variables[tok_line_[1]];
-    auto val = (tmp.type_ == "flt") ? tmp.val_flt_ : tmp.val_int_;
-    cout_mtx.lock();
-    std::cout << ("[THREAD " + std::to_string(thread_id) + "] " + tok_line_[1] + " : " + std::to_string(val) + " (" + tmp.type_ +")\n");
-    cout_mtx.unlock();
+    if (tmp.type_ == "flt")
+    {
+        cout_mtx.lock();
+        std::cout << ("[THREAD " + std::to_string(thread_id) + "] " + tok_line_[1] + " : " + std::to_string(tmp.val_flt_) + " (" + tmp.type_ +")\n");
+        cout_mtx.unlock();
+    }
+    else
+    {
+        cout_mtx.lock();
+        std::cout << ("[THREAD " + std::to_string(thread_id) + "] " + tok_line_[1] + " : " + std::to_string(tmp.val_int_) + " (" + tmp.type_ +")\n");
+        cout_mtx.unlock();
+    }
 }
