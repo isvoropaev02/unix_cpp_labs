@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 
 void redirect_cout_to_file(const std::string& filename);

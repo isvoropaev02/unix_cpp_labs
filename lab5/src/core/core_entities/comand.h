@@ -1,3 +1,4 @@
+#pragma once
 #include "variable.h"
 
 #include <vector>
