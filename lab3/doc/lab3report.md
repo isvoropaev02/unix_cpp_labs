@@ -35,6 +35,15 @@ g++ -o lab3/build/calc.exe lab3/src/calc.cpp
 lab3/build/calc.exe <value1> <operation> <value2>
 ```
 
+Пример вывода программы:
+
+```
+$ lab3/build/calc.exe 5.3 - 6.8
+5.3 - 6.8 = -1.5
+```
+
+NOTE: При использовании операции `^` второй аргумент ожидается положительным целочисленным. В случае подачи числа с ненулевой частью после запятой, она будет опущена.
+
 Полезные примеры обработки аргументов функции `main` находятся по [ссылке](https://www.programiz.com/cpp-programming/string-float-conversion).
 
 ## Задание 2
@@ -50,6 +59,41 @@ lab3/build/calc.exe <value1> <operation> <value2>
 списка. В конце программы сделать вывод этого списка на экран. Освободить
 память списка перед завершением программы.
 
+Реализованная программа находится в файле [`lab3/src/hanoi_tower.cpp`](../src/hanoi_tower.cpp)
+
+Компиляция и запуск программы делалась следующими командами (`.exe` файл помещается в папку `build`):
+
+```
+g++ -o lab3/build/hanoi_tower.exe lab3/src/hanoi_tower.cpp
+lab3/build/hanoi_tower.exe
+```
+Идея решения задачи взята отсюда - https://www.youtube.com/watch?v=rFuQCd4RvI0.
+
+Схема рекурентного решения зхадачи:
+
+![Диаграмма решения](image-1.png)
+
+Пример вывода программы для $n=4$:
+
+```
+Number of steps: 15
+Move disk 1 from pin 1 to pin 2
+Move disk 2 from pin 1 to pin 3
+Move disk 1 from pin 2 to pin 3
+Move disk 3 from pin 1 to pin 2
+Move disk 1 from pin 3 to pin 1
+Move disk 2 from pin 3 to pin 2
+Move disk 1 from pin 1 to pin 2
+Move disk 4 from pin 1 to pin 3
+Move disk 1 from pin 2 to pin 3
+Move disk 2 from pin 2 to pin 1
+Move disk 1 from pin 3 to pin 1
+Move disk 3 from pin 2 to pin 3
+Move disk 1 from pin 1 to pin 2
+Move disk 2 from pin 1 to pin 3
+Move disk 1 from pin 2 to pin 3
+```
+
 ## Задание 3
 
 **[SAVE] Результат всех вышеперечисленных шагов сохранить в репозиторий (+ отчет по данной ЛР в папку doc)**
@@ -64,3 +108,5 @@ lab3/build/calc.exe <value1> <operation> <value2>
 - Скрипт для отката изменений к последнему коммиту - [`reset.sh`](../../reset.sh)
 
 ## Вывод
+
+Была изучена работа с аргументами функции `main` в c++. Была изучена в общих четрах структура данных - двусвязный список и попробовано на практике использование его реализации из библиотеки STL.
