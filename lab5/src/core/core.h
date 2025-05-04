@@ -1,3 +1,4 @@
+#pragma once
 #include "core_entities/variable.h"
 
 #include <string>

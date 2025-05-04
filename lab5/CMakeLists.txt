@@ -10,6 +10,7 @@ add_executable(run_spl
     src/core/core.cpp
     src/core/core_entities/comand.cpp
     src/core/core_entities/variable.cpp
+    src/parser/io_handler.cpp
 )
 
 target_include_directories(run_spl PRIVATE
