@@ -20,7 +20,6 @@ class CreateVariable : public IComand
 {
 private:
     void check_syntaxis() override;
-    // std::vector<std::string> tok_line_;
 public:
     CreateVariable(const std::vector<std::string>& tok_line);
     ~CreateVariable() = default;

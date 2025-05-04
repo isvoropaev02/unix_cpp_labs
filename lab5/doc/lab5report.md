@@ -128,6 +128,23 @@ lab5/build/run_spl.exe -i <INPUT_FILE_PATH> -o <OUTPUT_FILE_PATH>
 
 5. У всех команд одинаковый интерфейс взаимодействия, т. к. они наследованы от общего базового класса.
 
+```
+class IComand
+{
+protected:
+    std::vector<std::string> tok_line_;
+    virtual void check_syntaxis() = 0;
+public:
+    virtual void run(std::unordered_map<std::string, Variable>& variables, const size_t thread_id) = 0;
+    IComand(const std::vector<std::string>& tok_line);
+    virtual ~IComand() = default;
+};
+
+class CreateVariable : public IComand
+class Print : public IComand
+class Expression : public IComand
+```
+
 ![alt text](image-1.png)
 
 ## Вывод
