@@ -6,10 +6,6 @@
 
 std::mutex cout_mtx;
 
-
-Variable::Variable(const std::string& val, const std::string& type) : type_(type), val_flt_(std::stof(val)), val_int_((int)std::stof(val)) {}
-Variable::Variable(Variable& other) : val_int_(other.val_int_), val_flt_(other.val_flt_), type_(other.type_) {}
-
 IComand::IComand(const std::vector<std::string>& tok_line) : tok_line_(tok_line) {}
 
 CreateVariable::CreateVariable(const std::vector<std::string>& tok_line) : IComand(tok_line) {}
