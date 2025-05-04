@@ -69,4 +69,5 @@ void Core::process()
     for (auto& thread : threads_pool_) thread.join();
     std::cout << "\nThreads working time:\n";
     for (size_t i = 0; i < threads_time_.size(); i++) std::cout << "Time [THREAD " << i << "]: " << threads_time_[i].count() << " usec\n";
+    std::cout << "\n";
 }
