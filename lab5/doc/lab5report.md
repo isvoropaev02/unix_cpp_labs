@@ -128,7 +128,7 @@ lab5/build/run_spl.exe -i <INPUT_FILE_PATH> -o <OUTPUT_FILE_PATH>
 
 5. У всех команд одинаковый интерфейс взаимодействия, т. к. они наследованы от общего базового класса.
 
-
+![alt text](image-1.png)
 
 ## Вывод
 
