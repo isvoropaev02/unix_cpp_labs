@@ -25,7 +25,7 @@ int main(int argc, char const *argv[])
         break;
     default:
         throw std::invalid_argument("Only 1 optional CLI argument is supported (<OUTPUT_FILE_PATH>)\n");
-        break;
+        return 1;
     }
     Parser parser;
     const auto commands = parser.process();

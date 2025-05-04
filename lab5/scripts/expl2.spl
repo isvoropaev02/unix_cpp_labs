@@ -1,0 +1,5 @@
+!int a = 5 !int b = -10 !expr c = a + b !print c
+!int a = 5 !flt b = -10 !expr c = a + b !print c
+!int a = 5 !flt b = -10 !expr c = a / b !print c !expr c = c / b !print c
+!flt q1 = 0.3 !flt q2 = -0.098 !expr q3 = q1 * q2 !print q3
+!

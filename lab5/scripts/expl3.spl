@@ -1,0 +1,6 @@
+!for n = 30 !print n
+!for m = 30 !print m
+!flt one = 1 !for k = 30 !expr c = k + one !print c
+!int b = 100 !for l = 30 !expr c = l / b !print c
+!flt neg = -100 !for r = 30 !expr c = r * neg !print c
+!
