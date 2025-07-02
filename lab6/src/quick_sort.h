@@ -5,17 +5,17 @@
 #include <chrono>
 
 template <typename T>
-int partition(std::vector<T>& arr, size_t low, size_t high) {
-    T pivot = arr[high-1];
+int partition(std::vector<T>& in_array, size_t low, size_t high) {
+    T pivot = in_array[high-1];
     size_t i = low;
 
     for (size_t j = low; j < high-1; ++j) {
-        if (arr[j] < pivot) {
-            std::swap(arr[i], arr[j]);
+        if (in_array[j] < pivot) {
+            std::swap(in_array[i], in_array[j]);
             ++i;
         }
     }
-    std::swap(arr[i], arr[high-1]);
+    std::swap(in_array[i], in_array[high-1]);
     return i;
 }
 
