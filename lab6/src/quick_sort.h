@@ -5,7 +5,7 @@
 #include <chrono>
 
 template <typename T>
-int partition(std::vector<T>& in_array, size_t low, size_t high) {
+size_t partition(std::vector<T>& in_array, size_t low, size_t high) {
     T pivot = in_array[high-1];
     size_t i = low;
 
