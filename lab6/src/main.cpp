@@ -2,31 +2,44 @@
 #include "cocktail_sort.h"
 
 #include <iostream>
+#include <fstream>
 #include <vector>
+#include <algorithm>
+
+template<typename T>
+std::vector<T> get_array_from_file()
+{
+    size_t k{0};
+    T tmp;
+    std::vector<T> out;
+    std::ifstream input_file ("lab6/src/input.txt");
+    if (input_file.is_open())
+    {
+        input_file >> k;
+        out.reserve(k);
+        for (size_t i = 0; i < k; i++)
+        {
+            input_file >> tmp;
+            out.push_back(tmp);
+        }
+        input_file.close();
+    }
+    return out;
+}
 
 int main() {
-    std::vector<int> numbers = {10, 9, 8, 7, 6, 3, 1, 4, 6, 7, 3, 8, 7, 2, 4, 9, 6, 1, 4, 9, 3, 6, 8, 8, 5, 1, 2};
-    std::vector<int> numbers1 = {2, 3, 1, 1, 1, 4, 5, 10, 2, 2, 2, 22, 3, 6, 8, 9, 9, 7, 8};
-    std::vector<int> numbers2 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 11, 11, 12, 13, 14, 15, 16, 17, 17, 18, 19, 20, 20, 21, 22};
-    auto t0 = cocktail_sort(numbers);
-    auto t1 = cocktail_sort(numbers1);
-    auto t2 = cocktail_sort(numbers2);
-
-    std::cout << "Отсортированный массив (t=" << t0 << " us):";
-    for (int num : numbers) {
-        std::cout << num << " ";
+    auto test_vec_qs = get_array_from_file<int>();
+    auto test_vec_cs{test_vec_qs};
+    const auto t_qs = quick_sort(test_vec_qs);
+    const auto t_cs = cocktail_sort(test_vec_cs);
+    std::cout << "Quick-sort (t=" << t_qs << " us):\n";
+    for (size_t i = 0; i < std::min((size_t)150, test_vec_qs.size()); i++) {
+        std::cout << test_vec_qs[i] << " ";
     }
-    std::cout << "\n";
-
-    std::cout << "Отсортированный массив (t=" << t1 << " us):";
-    for (int num : numbers1) {
-        std::cout << num << " ";
-    }
-    std::cout << "\n";
-
-    std::cout << "Отсортированный массив (t=" << t2 << " us):";
-    for (int num : numbers2) {
-        std::cout << num << " ";
+    std::cout << "\n\n";
+    std::cout << "Cocktail-sort (t=" << t_cs << " us):\n";
+    for (size_t i = 0; i < std::min((size_t)150, test_vec_cs.size()); i++) {
+        std::cout << test_vec_cs[i] << " ";
     }
     std::cout << "\n";
     return 0;
