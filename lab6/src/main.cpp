@@ -28,7 +28,7 @@ std::vector<T> get_array_from_file()
 }
 
 int main() {
-    auto test_vec_qs = get_array_from_file<int>();
+    auto test_vec_qs = get_array_from_file<float>();
     auto test_vec_cs{test_vec_qs};
     const auto t_qs = quick_sort(test_vec_qs);
     const auto t_cs = cocktail_sort(test_vec_cs);

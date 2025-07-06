@@ -16,7 +16,7 @@ def gen_tests_task2(n_samples=128):
     return arr
 
 if __name__ == "__main__":
-    arr = gen_tests_task2()
+    arr = gen_tests_task1(10000)
 
     with open(FILE_PATH, "w") as file:
         file.write(str(len(arr))+"\n")
