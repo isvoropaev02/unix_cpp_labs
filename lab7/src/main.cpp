@@ -1,8 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <algorithm>
-#include <string>
 
 template <typename T>
 struct point_t
@@ -32,13 +30,36 @@ std::vector<point_t<T>> get_coords_from_file()
     return out;
 }
 
+template <typename T>
+std::vector<std::vector<T>> calculate_dist_graph(const std::vector<point_t<T>> &cities)
+{
+    const size_t n = cities.size();
+    std::vector<std::vector<T>> graph(n, std::vector<T>(n, 0));
+    for (size_t j0 = 0; j0 < n; j0++)
+    {
+        for (size_t j1 = 0; j1 < n; j1++)
+        {
+            graph[j0][j1] = cities[j0].distance(cities[j1]);
+        }
+    }
+    return graph;
+}
+
 int main()
 {
     auto cities = get_coords_from_file<float>();
     for (const auto &city : cities)
     {
         std::cout << city.x << " " << city.y << "\n";
-        std::cout << city.distance(cities[0]) << "\n";
+    }
+    auto graph = calculate_dist_graph(cities);
+    for (const auto &row : graph)
+    {
+        for (const auto &val : row)
+        {
+            std::cout << val << " ";
+        }
+        std::cout << "\n";
     }
     return 0;
 }
