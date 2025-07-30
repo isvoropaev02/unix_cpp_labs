@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <limits>
 
 template <typename T>
 struct point_t
@@ -43,6 +44,53 @@ std::vector<std::vector<T>> calculate_dist_graph(const std::vector<point_t<T>> &
         }
     }
     return graph;
+}
+
+template <typename T>
+T tsp_solve(const std::vector<std::vector<T>> &dist_matr)
+{
+    const size_t n = dist_matr.size();
+    if (n <= 1)
+    {
+        return (T)0;
+    }
+    const size_t num_masks = ((size_t)1 << n);
+    std::vector<std::vector<T>> state_table(num_masks, std::vector<T>(n, std::numeric_limits<T>::max()));
+
+    // Базовый случай: начальный город 0
+    dp[1 << 0][0] = 0;
+    for (size_t mask = 1; mask < num_masks; ++mask)
+    {
+        // Пропускаем маски без стартового города
+        if (!(mask & 1))
+        {
+            continue;
+        }
+        for (size_t last = 0; last < n; ++last)
+        {
+            if (!(mask & ((size_t)1 << last)))
+            {
+                continue;
+            }
+
+            // Маска без текущего города
+            size_t prev_mask = mask ^ ((size_t)1 << last);
+
+            for (size_t prev = 0; prev < n; ++prev)
+            {
+                if (prev == last || !(prev_mask & (1 << prev)))
+                {
+                    continue;
+                }
+                const auto new_dist = dp[prev_mask][prev] + dist_matr[prev][last];
+                if (new_dist < dp[mask][last])
+                {
+                    dp[mask][last] = new_dist;
+                }
+            }
+        }
+    }
+    return (T)0;
 }
 
 int main()
