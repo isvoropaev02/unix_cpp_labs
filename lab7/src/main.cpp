@@ -1,3 +1,5 @@
+#include "additional.h"
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -121,5 +123,15 @@ int main()
 
     std::cout << "Min distance: " << tsp_solve(graph)
               << "\n";
+
+    auto [dist, seq] = tsp_solve_with_path(graph);
+    std::cout << "Min distance (1): " << tsp_solve(graph)
+              << "\n";
+
+    for (auto &&el : seq)
+    {
+        std::cout << el << " ";
+    }
+    std::cout << "\n";
     return 0;
 }
