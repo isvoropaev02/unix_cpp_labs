@@ -6,7 +6,7 @@ class TrafficLight:
         self.local_time = 0.
         self.current_state_id = 0
 
-    def update(self, dt_s: float = 1.,) -> None:
+    def update(self, dt_s: float = 1.) -> None:
         self.local_time += dt_s
         if self.local_time > self.state_duration_s:
             self.current_state_id = (self.current_state_id + 1) % 2
@@ -19,12 +19,11 @@ class TrafficLight:
 class CrossRoad:
     def __init__(self, coords: tuple[float, float] = (0., 0.), tr_light_duration_s: float = 20.) -> None:
         self.x, self.y = coords
-        self.port_road_id = [0, None, None, None]
         self.tr_light = TrafficLight(coords, tr_light_duration_s)
         self.port_green = [True, False, True, False]
 
-    def update(self) -> None:
-        self.tr_light.update()
+    def update(self, dt_s: float = 1.) -> None:
+        self.tr_light.update(dt_s)
         green02, green13 = self.tr_light.get_current_state()
         self.port_green = [green02, green13, green02, green13]
 
@@ -76,9 +75,6 @@ class Vehicle:
         if self.remaining_dist <= 0:
             self.remaining_dist = 0
             self.ready_to_switch_road = True
-
-    def get_car_state(self) -> tuple[bool, bool]:
-        return (self.ready_to_switch_road, self.reached_destination)
 
     def proceed_to_next_step(self) -> None:
         self.path_step_id += 1
