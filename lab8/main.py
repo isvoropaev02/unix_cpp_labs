@@ -2,10 +2,12 @@ from road_elements import *
 
 '''Simulation configuration'''
 CROSS_ROADS = {0: CrossRoad(coords=(0, 0), tr_light_duration_s=20.),
-               1: CrossRoad(coords=(300., 0.), tr_light_duration_s=15)}
-ROADS = {0: Road((0, 0), (1, 0))}
+               1: CrossRoad(coords=(300., 0.), tr_light_duration_s=15),
+               2: CrossRoad(coords=(300., 150.), tr_light_duration_s=22)}
+ROADS = {0: Road((0, 0), (1, 0)),
+         1: Road((1, 1), (2, 0))}
 CARS = dict()
-CAR_SPAWN_RATE = 10      # every x seconds a new car appears
+CAR_SPAWN_RATE = 20      # every x seconds a new car appears
 SIM_DURATION = 120      # sec
 DELTA_T = 1             # sec
 
@@ -19,7 +21,7 @@ while global_time_s < SIM_DURATION:
         if bool(next_car_id%2):
             CARS.update({next_car_id: Vehicle([1, 0], [(0, False, 300.)], 20)})
         else:
-            CARS.update({next_car_id: Vehicle([0, 1], [(0, True, 300.)], 25)})
+            CARS.update({next_car_id: Vehicle([0, 1, 2], [(0, True, 300.), (1, True, 150.)], 30)})
         road_id = CARS[next_car_id].curr_road_id
         direct_flow = CARS[next_car_id].curr_road_direct_flow
         ROADS[road_id].add_car_to_road(next_car_id, direct_flow)
@@ -42,9 +44,9 @@ while global_time_s < SIM_DURATION:
                 if car.reached_destination:
                     finished_cars_id.append(id)
                 else:
-                    road_id = car.curr_road_id
+                    new_road_id = car.curr_road_id
                     direct_flow = car.curr_road_direct_flow
-                    road.add_car_to_road(id, direct_flow)
+                    ROADS[new_road_id].add_car_to_road(id, direct_flow)
     for car_id in finished_cars_id:
         CARS.pop(car_id)
     for id, node in CROSS_ROADS.items():

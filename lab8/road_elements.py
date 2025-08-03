@@ -19,6 +19,7 @@ class TrafficLight:
 class CrossRoad:
     def __init__(self, coords: tuple[float, float] = (0., 0.), tr_light_duration_s: float = 20.) -> None:
         self.x, self.y = coords
+        self.road_id_vs_ports = [None, None, None, None]
         self.tr_light = TrafficLight(coords, tr_light_duration_s)
         self.port_green = [True, False, True, False]
 
@@ -84,3 +85,4 @@ class Vehicle:
             self.curr_node_id = self.path_nodes[self.path_step_id + 1]
             self.curr_road_id, self.curr_road_direct_flow, self.remaining_dist = self.path_roads[
                 self.path_step_id]
+            self.ready_to_switch_road = False
