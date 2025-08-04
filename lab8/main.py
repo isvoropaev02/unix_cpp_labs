@@ -1,13 +1,14 @@
 from road_elements import *
+from vehicle_route_generator import VehicleGenerator
 
 '''Simulation configuration'''
-CROSS_ROADS = {0: CrossRoad(coords=(0, 0), tr_light_duration_s=20.),
-               1: CrossRoad(coords=(300., 0.), tr_light_duration_s=15),
-               2: CrossRoad(coords=(300., 150.), tr_light_duration_s=22)}
+CROSS_ROADS = {0: CrossRoad(coords=(0, 0), road_id_vs_ports=[0, -1, -1, -1], tr_light_duration_s=20.),
+               1: CrossRoad(coords=(300., 0.), road_id_vs_ports=[0, 1, -1, -1], tr_light_duration_s=15),
+               2: CrossRoad(coords=(300., 150.), road_id_vs_ports=[1, -1, -1, -1], tr_light_duration_s=22)}
 ROADS = {0: Road((0, 0), (1, 0)),
          1: Road((1, 1), (2, 0))}
 CARS = dict()
-CAR_SPAWN_RATE = 20      # every x seconds a new car appears
+CAR_SPAWN_RATE = 20     # every x seconds a new car appears
 SIM_DURATION = 120      # sec
 DELTA_T = 1             # sec
 
@@ -15,13 +16,12 @@ DELTA_T = 1             # sec
 global_time_s = 0
 next_car_id = 0
 
+route_gen = VehicleGenerator(2)
+
 while global_time_s < SIM_DURATION:
     print(f"GLOBAL TIME: {global_time_s} sec")
     if global_time_s % CAR_SPAWN_RATE == 0:
-        if bool(next_car_id%2):
-            CARS.update({next_car_id: Vehicle([1, 0], [(0, False, 300.)], 20)})
-        else:
-            CARS.update({next_car_id: Vehicle([0, 1, 2], [(0, True, 300.), (1, True, 150.)], 30)})
+        CARS.update({next_car_id: route_gen.generate(ROADS, CROSS_ROADS)})
         road_id = CARS[next_car_id].curr_road_id
         direct_flow = CARS[next_car_id].curr_road_direct_flow
         ROADS[road_id].add_car_to_road(next_car_id, direct_flow)

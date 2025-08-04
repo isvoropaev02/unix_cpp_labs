@@ -17,9 +17,9 @@ class TrafficLight:
 
 
 class CrossRoad:
-    def __init__(self, coords: tuple[float, float] = (0., 0.), tr_light_duration_s: float = 20.) -> None:
+    def __init__(self, coords: tuple[float, float] = (0., 0.), road_id_vs_ports: list[int] = [0, -1, -1, -1], tr_light_duration_s: float = 20.) -> None:
         self.x, self.y = coords
-        self.road_id_vs_ports = [None, None, None, None]
+        self.road_id_vs_ports = road_id_vs_ports
         self.tr_light = TrafficLight(coords, tr_light_duration_s)
         self.port_green = [True, False, True, False]
 
