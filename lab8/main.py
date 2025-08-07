@@ -1,27 +1,38 @@
 from road_elements import *
 from vehicle_route_generator import VehicleGenerator
+from SPB import SPB_CR, SPB_ROADS
+import numpy as np
+
 
 '''Simulation configuration'''
-CROSS_ROADS = {0: CrossRoad(coords=(0, 0), road_id_vs_ports=[0, 1, -1, -1], tr_light_duration_s=20.),
-               1: CrossRoad(coords=(0., 300.), road_id_vs_ports=[0, 2, -1, -1], tr_light_duration_s=15),
-               2: CrossRoad(coords=(400., 300.), road_id_vs_ports=[1, 2, 3, 4], tr_light_duration_s=22),
-               3: CrossRoad(coords=(450., 500.), road_id_vs_ports=[3, 5, -1, -1], tr_light_duration_s=18),
-               4: CrossRoad(coords=(600., 300.), road_id_vs_ports=[5, 4, -1, -1], tr_light_duration_s=27)}
-ROADS = {0: Road((0, 0), (1, 0)),
-         1: Road((0, 1), (2, 0)),
-         2: Road((1, 1), (2, 1)),
-         3: Road((2, 2), (3, 0)),
-         4: Road((2, 3), (4, 1)),
-         5: Road((3, 1), (4, 0))}
+# CROSS_ROADS = SPB_CR
+# ROADS = SPB_ROADS
+CROSS_ROADS = [CrossRoad(coords=(0, 0), road_id_vs_ports=[0, 1, -1, -1], tr_light_duration_s=20.),
+               CrossRoad(coords=(0., 300.), road_id_vs_ports=[
+                         0, 2, -1, -1], tr_light_duration_s=15),
+               CrossRoad(coords=(400., 300.), road_id_vs_ports=[
+                         1, 2, 3, 4], tr_light_duration_s=22),
+               CrossRoad(coords=(450., 500.), road_id_vs_ports=[
+                         3, 5, -1, -1], tr_light_duration_s=18),
+               CrossRoad(coords=(600., 300.), road_id_vs_ports=[5, 4, -1, -1], tr_light_duration_s=27)]
+ROADS = [Road((0, 0), (1, 0)),
+         Road((0, 1), (2, 0)),
+         Road((1, 1), (2, 1)),
+         Road((2, 2), (3, 0)),
+         Road((2, 3), (4, 1)),
+         Road((3, 1), (4, 0))]
 CARS = dict()
 CAR_SPAWN_RATE = 20     # every x seconds a new car appears
 CAR_ROUTE_LENGHT = 4    # num of roads in route
-SIM_DURATION = 120      # sec
-DELTA_T = 1             # sec
+SIM_DURATION = 600      # sec
+DELTA_T = 10             # sec
 
 '''Simulation variables'''
 global_time_s = 0
 next_car_id = 0
+time_vec = np.arange(0, SIM_DURATION, step=DELTA_T, dtype=np.int32)
+roads_state_vec = np.empty(
+    shape=(time_vec.shape[0], len(ROADS), 2), dtype=np.int32)
 
 route_gen = VehicleGenerator(CAR_ROUTE_LENGHT)
 
@@ -56,10 +67,10 @@ while global_time_s < SIM_DURATION:
                     ROADS[new_road_id].add_car_to_road(id, direct_flow)
     for car_id in finished_cars_id:
         CARS.pop(car_id)
-    for id, node in CROSS_ROADS.items():
+    for id, node in enumerate(CROSS_ROADS):
         print(f"node id: {id}  |  state: {node.get_current_state()}")
         node.update(DELTA_T)
-    for id, road in ROADS.items():
+    for id, road in enumerate(ROADS):
         print(f"road id: {id}  |  state: {road.get_road_state()}")
     print()
     global_time_s += DELTA_T
