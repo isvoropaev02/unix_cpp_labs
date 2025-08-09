@@ -63,7 +63,7 @@ def plot_spb_map(cross_roads: list[CrossRoad], roads: list[Road]) -> None:
     plt.show()
 
 
-def plot_spb_map_with_traffic(cross_roads: list[CrossRoad], roads: list[Road], cars: list[Vehicle]) -> None:
+def plot_spb_map_with_traffic(cross_roads: list[CrossRoad], roads: list[Road], cars: dict[int, Vehicle]) -> None:
     image = cv2.cvtColor(cv2.imread("spb_map.png", 1), cv2.COLOR_BGR2RGB)
 
     # Координаты, в которых будет отображаться изображение
@@ -89,7 +89,7 @@ def plot_spb_map_with_traffic(cross_roads: list[CrossRoad], roads: list[Road], c
     for i, cr in enumerate(cross_roads):
         plt.scatter([cr.x], [cr.y], c='royalblue', zorder=3)
 
-    for car in cars:
+    for car in cars.values():
         direct_flow = car.curr_road_direct_flow
         sgn = 1
         road_tmp = roads[car.curr_road_id]
@@ -111,7 +111,8 @@ def plot_spb_map_with_traffic(cross_roads: list[CrossRoad], roads: list[Road], c
     plt.show()
 
 
-# plot_spb_map(SPB_CR, SPB_ROADS)
-# plot_city_map(CROSS_ROADS, ROADS)
-plot_spb_map_with_traffic(SPB_CR, SPB_ROADS, [Vehicle(
-    path_nodes=[11, 12], path_roads=[(37, False, 300)], target_speed_kmh=30)])
+if __name__ == "__main__":
+    # plot_spb_map(SPB_CR, SPB_ROADS)
+    # plot_city_map(CROSS_ROADS, ROADS)
+    plot_spb_map_with_traffic(SPB_CR, SPB_ROADS, {0: Vehicle(
+        path_nodes=[11, 12], path_roads=[(37, False, 300)], target_speed_kmh=30)})

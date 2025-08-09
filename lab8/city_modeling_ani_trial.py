@@ -5,6 +5,8 @@ from city_plots import plot_spb_map_with_traffic
 
 import numpy as np
 import matplotlib.pyplot as plt
+import cv2
+from datetime import timedelta
 
 
 '''Simulation configuration'''
@@ -12,22 +14,47 @@ CROSS_ROADS = SPB_CR
 ROADS = SPB_ROADS
 CARS = dict()
 SIM_DURATION = 600      # sec
-DELTA_T = 4             # sec
+DELTA_T = 3             # sec
 CAR_SPAWN_RATE = 1 * DELTA_T  # every x seconds a new car appears
 CAR_ROUTE_LENGHT = 14    # num of roads in route
 
 
+def get_cars_coords(cross_roads: list[CrossRoad], roads: list[Road], cars: dict[int, Vehicle]) -> list[list[float]]:
+    out_coords = []
+    offset = 10
+    for car in cars.values():
+        direct_flow = car.curr_road_direct_flow
+        road_tmp = roads[car.curr_road_id]
+        cr0 = cross_roads[road_tmp.node_from_id]
+        cr1 = cross_roads[road_tmp.node_to_id]
+        if not direct_flow:
+            cr0, cr1 = cr1, cr0
+        n_vec = np.array([cr1.y-cr0.y, cr0.x-cr1.x], dtype=np.float32)
+        full_dist = np.linalg.norm(n_vec)
+        n_vec = offset * n_vec / full_dist
+        xr = car.remaining_dist * (cr1.x-cr0.x) / full_dist
+        yr = car.remaining_dist * (cr1.y-cr0.y) / full_dist
+        out_coords.append(list([cr1.x-xr + n_vec[0], cr1.y-yr+n_vec[1]]))
+    return out_coords
+
+
 '''Simulation variables'''
-global_time_s = 0
 next_car_id = 0
 time_vec = np.arange(0, SIM_DURATION, step=DELTA_T, dtype=np.int32)
 roads_state_vec = np.empty(
     shape=(time_vec.shape[0], len(ROADS), 2), dtype=np.int32)
-
 route_gen = VehicleGenerator(CAR_ROUTE_LENGHT)
 
+'''Activating interactive city plot'''
+plt.ion()
+plot_spb_map_with_traffic(CROSS_ROADS, ROADS, CARS)
+fig, ax = plt.gcf(), plt.gca()
+sctr_plt = ax.scatter([], [], c='k', marker='.', zorder=3)  # no cars yet
+fig.suptitle("Saint-Petersburg")
+abs_time = timedelta(hours=14, minutes=15, seconds=0)  # 9:00:00
+ax.set_title("Local time: " + str(abs_time))
+
 for i_time, global_time_s in enumerate(time_vec):
-    print(f"GLOBAL TIME: {global_time_s} sec")
     if global_time_s % CAR_SPAWN_RATE == 0:
         CARS.update({next_car_id: route_gen.generate(ROADS, CROSS_ROADS)})
         road_id = CARS[next_car_id].curr_road_id
@@ -36,8 +63,6 @@ for i_time, global_time_s in enumerate(time_vec):
         next_car_id += 1
     finished_cars_id = list([])
     for id, car in CARS.items():
-        print(
-            f"car id: {id}  |  step_id: {car.path_step_id}  |  remaining dist: {car.remaining_dist}")
         car.update(DELTA_T)
         ready_to_switch_road = car.ready_to_switch_road
         road_id = car.curr_road_id
@@ -59,12 +84,15 @@ for i_time, global_time_s in enumerate(time_vec):
     for car_id in finished_cars_id:
         CARS.pop(car_id)
     for id, node in enumerate(CROSS_ROADS):
-        print(f"node id: {id}  |  state: {node.get_current_state()}")
         node.update(DELTA_T)
     for id, road in enumerate(ROADS):
-        print(f"road id: {id}  |  state: {road.get_road_state()}")
         roads_state_vec[i_time][id][0], roads_state_vec[i_time][id][1] = road.get_road_state()
-    print()
+    # print()
+    sctr_plt.set_offsets(get_cars_coords(CROSS_ROADS, ROADS, CARS))
+    ax.set_title("Local time: " + str(abs_time +
+                 timedelta(seconds=float(global_time_s))))
+    fig.canvas.draw_idle()
+    plt.pause(0.2)
 
-
-plot_spb_map_with_traffic(CROSS_ROADS, ROADS, CARS)
+plt.ioff()
+plt.show()
