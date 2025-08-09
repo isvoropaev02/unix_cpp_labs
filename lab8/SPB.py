@@ -1,7 +1,7 @@
 from road_elements import CrossRoad, Road
 
 SPB_CR = [
-    CrossRoad(coords=(5, 1705),
+    CrossRoad(coords=(10, 1705),
               road_id_vs_ports=[0, 1, 2, -1], tr_light_duration_s=25.),
     CrossRoad(coords=(241, 455),
               road_id_vs_ports=[45, 46, -1, -1], tr_light_duration_s=28.),

@@ -6,7 +6,7 @@ class VehicleGenerator:
     def __init__(self, num_route_steps: int = 1) -> None:
         self.num_route_steps = num_route_steps
 
-    def generate(self, roads_dict: list[Road], nodes_dict: list[CrossRoad]) -> Vehicle | None:
+    def generate(self, roads_dict: list[Road], nodes_dict: list[CrossRoad]) -> Vehicle:
         nodes, roads = [], []
         start_node_id = randint(0, len(nodes_dict)-1)
         nodes.append(start_node_id)
