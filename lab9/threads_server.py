@@ -1,0 +1,50 @@
+from typing import List, Tuple
+from user_request import UserRequest, RequestResult
+import time
+from queue import Queue
+import threading
+
+
+def thread_worker(queue: Queue[UserRequest], results: List[RequestResult]):
+    while not queue.empty():
+        try:
+            request = queue.get_nowait()
+            result = request.process_request()
+            results.append(result)
+            queue.task_done()
+            print(f"User {result.user_id}: action {result.action_type}, "
+                  f"CPU: {result.cpu_load*100:.1f}%")
+        except:
+            break
+
+
+def threaded_simulation(requests, num_threads: int = 4) -> Tuple[float, float]:
+    queue = Queue()
+
+    for request in requests:
+        queue.put(request)
+
+    results = []
+    threads = []
+    start_time = time.time()
+
+    for _ in range(num_threads):
+        thread = threading.Thread(target=thread_worker, args=(queue, results))
+        thread.start()
+        threads.append(thread)
+
+    for thread in threads:
+        thread.join()
+
+    total_time = time.time() - start_time
+    total_cpu = sum(result.cpu_load for result in results)
+    avg_cpu = total_cpu / len(results)
+
+    # for result in results:
+    #     print(f"User {result.user_id}: action {result.action_type}, "
+    #           f"CPU: {result.cpu_load*100:.1f}%")
+
+    print(f"\nThreaded - Total time: {total_time:.3f}s, "
+          f"Avg CPU: {avg_cpu*100:.1f}%")
+
+    return total_time, avg_cpu
