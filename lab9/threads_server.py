@@ -13,12 +13,12 @@ def thread_worker(queue: Queue[UserRequest], results: List[RequestResult]):
             results.append(result)
             queue.task_done()
             print(f"User {result.user_id}: action {result.action_type}, "
-                  f"CPU: {result.cpu_load*100:.1f}%")
+                  f"time: {result.processing_time:.3f}s, CPU: {result.cpu_load*100:.1f}%")
         except:
             break
 
 
-def threaded_simulation(requests, num_threads: int = 4) -> Tuple[float, float]:
+def threaded_simulation(requests: List[UserRequest], num_threads: int = 4) -> Tuple[float, float]:
     queue = Queue()
 
     for request in requests:
@@ -39,10 +39,6 @@ def threaded_simulation(requests, num_threads: int = 4) -> Tuple[float, float]:
     total_time = time.time() - start_time
     total_cpu = sum(result.cpu_load for result in results)
     avg_cpu = total_cpu / len(results)
-
-    # for result in results:
-    #     print(f"User {result.user_id}: action {result.action_type}, "
-    #           f"CPU: {result.cpu_load*100:.1f}%")
 
     print(f"\nThreaded - Total time: {total_time:.3f}s, "
           f"Avg CPU: {avg_cpu*100:.1f}%")
