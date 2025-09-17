@@ -1,6 +1,7 @@
 from sequential_server import sequential_simulation
 from threads_server import threaded_simulation
 from multiproc_server import multiprocess_simulation
+from async_server import asyncio_simulation
 from user_request import *
 from random import shuffle
 
@@ -20,8 +21,8 @@ def main():
     print("\n=== Threaded Simulation ===")
     thread_time, thread_cpu = threaded_simulation(requests=requests)
 
-    # print("\n=== Asyncio Simulation ===")
-    # asyncio_time, asyncio_cpu = asyncio.run(asyncio_simulation(U1, U2, U3))
+    print("\n=== Asyncio Simulation ===")
+    asyncio_time, asyncio_cpu = asyncio.run(asyncio_simulation(requests=requests))
 
     # Сравнение результатов
     print("\n" + "="*50)
@@ -32,7 +33,7 @@ def main():
     print(f"{'Sequential':<12} {seq_time:<10.3f} {seq_cpu*100:<12.1f}")
     print(f"{'Multiprocess':<12} {mp_time:<10.3f} {mp_cpu*100:<12.1f}")
     print(f"{'Threaded':<12} {thread_time:<10.3f} {thread_cpu*100:<12.1f}")
-    # print(f"{'Asyncio':<12} {asyncio_time:<10.3f} {asyncio_cpu*100:<12.1f}")
+    print(f"{'Asyncio':<12} {asyncio_time:<10.3f} {asyncio_cpu*100:<12.1f}")
 
 
 if __name__ == "__main__":

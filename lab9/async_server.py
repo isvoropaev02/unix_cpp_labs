@@ -2,3 +2,22 @@ from typing import List, Tuple
 from user_request import UserRequest, RequestResult
 import time
 import asyncio
+
+async def asyncio_simulation(requests: List[UserRequest]) -> Tuple[float, float]:
+    tasks = [request.process_async() for request in requests]
+    
+    start_time = time.time()
+    results = await asyncio.gather(*tasks)
+    total_time = time.time() - start_time
+    
+    total_cpu = sum(result.cpu_load for result in results)
+    avg_cpu = total_cpu / len(results)
+    
+    for result in results:
+        print(f"User {result.user_id}: action {result.action_type}, "
+              f"time: {result.processing_time:.3f}s, CPU: {result.cpu_load*100:.1f}%")
+    
+    print(f"\nAsyncio - Total time: {total_time:.3f}s, "
+          f"Avg CPU: {avg_cpu*100:.1f}%")
+    
+    return total_time, avg_cpu
