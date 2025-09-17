@@ -1,12 +1,10 @@
 import time
+import asyncio
 from dataclasses import dataclass
 from typing import List
 from random import shuffle
-import asyncio
-
-T1 = 0.5  # Registration
-T2 = 0.3  # Get main page
-T3 = 0.1  # Get active users
+from cpu_manager import cpu_manager
+from sim_params import *
 
 
 @dataclass
@@ -18,30 +16,31 @@ class RequestResult:
 
 
 class UserRequest:
-    def __init__(self, user_id: int, action_type: int):
+    def __init__(self, user_id: int, action_type: int, ):
         self.user_id = user_id
         self.action_type = action_type
+        self.required_cpu = self._get_cpu_load()
+        self.processing_time = self._get_processing_time()
+    
+    def _get_cpu_load(self) -> float:
+        loads = {1: C1, 2: C2, 3: C3}
+        return loads.get(self.action_type, 0)
+    
+    def _get_processing_time(self) -> float:
+        times = {1: T1, 2: T2, 3: T3}
+        return times.get(self.action_type, 0)
 
     def process_request(self) -> RequestResult:
         start_time = time.time()
-
-        # Имитация обработки запроса
-        if self.action_type == 1:
-            time.sleep(T1)
-            cpu_load = 0.25
-        elif self.action_type == 2:
-            time.sleep(T2)
-            cpu_load = 0.15
-        elif self.action_type == 3:
-            time.sleep(T3)
-            cpu_load = 0.01
-        else:
-            cpu_load = 0.0
-
+        if CPU_MANAGER_ENABLE:
+            cpu_manager.wait_for_resource(self.required_cpu)
+        time.sleep(self.processing_time)
         processing_time = time.time() - start_time
-        return RequestResult(self.user_id, self.action_type, cpu_load, processing_time)
+        if CPU_MANAGER_ENABLE:
+            cpu_manager.release(self.required_cpu)
+        return RequestResult(self.user_id, self.action_type, self.required_cpu, processing_time)
     
-    async def process_async(self) -> RequestResult:
+    async def process_request_async(self) -> RequestResult:
         start_time = time.time()
         
         # Имитация асинхронной обработки

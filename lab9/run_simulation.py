@@ -2,15 +2,12 @@ from sequential_server import sequential_simulation
 from threads_server import threaded_simulation
 from multiproc_server import multiprocess_simulation
 from async_server import asyncio_simulation
+from sim_params import *
 from user_request import *
-from random import shuffle
-
-U1 = 3
-U2 = 5
-U3 = 10
-
+from random import shuffle, seed
 
 def main():
+    seed(SEED)
     requests = create_requests(U1=U1, U2=U2, U3=U3)
     print("=== Sequential Simulation ===")
     seq_time, seq_cpu = sequential_simulation(requests=requests)

@@ -1,7 +1,7 @@
-from typing import List, Tuple
-from user_request import UserRequest, RequestResult
 import time
 import multiprocessing as mp
+from typing import List, Tuple
+from user_request import UserRequest, RequestResult
 
 
 def process_worker(request: UserRequest) -> RequestResult:

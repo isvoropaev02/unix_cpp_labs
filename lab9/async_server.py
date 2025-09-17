@@ -1,10 +1,11 @@
-from typing import List, Tuple
-from user_request import UserRequest, RequestResult
+
 import time
 import asyncio
+from typing import List, Tuple
+from user_request import UserRequest
 
 async def asyncio_simulation(requests: List[UserRequest]) -> Tuple[float, float]:
-    tasks = [request.process_async() for request in requests]
+    tasks = [request.process_request_async() for request in requests]
     
     start_time = time.time()
     results = await asyncio.gather(*tasks)

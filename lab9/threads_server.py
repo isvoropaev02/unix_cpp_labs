@@ -1,8 +1,8 @@
+import threading
+import time
 from typing import List, Tuple
 from user_request import UserRequest, RequestResult
-import time
 from queue import Queue
-import threading
 
 
 def thread_worker(queue: Queue[UserRequest], results: List[RequestResult]):

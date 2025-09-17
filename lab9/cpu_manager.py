@@ -2,6 +2,7 @@ import time
 import threading
 from dataclasses import dataclass
 from typing import List
+from sim_params import *
 
 @dataclass
 class CpuManager:
@@ -10,7 +11,7 @@ class CpuManager:
     load_history: List[float]
     timestamps: List[float]
     lock: threading.Lock
-    max_capacity: float = 1.0
+    max_capacity: float = MAX_CAPACITY
     
     def __init__(self):
         self.current_load = 0.0
@@ -19,16 +20,15 @@ class CpuManager:
         self.timestamps = []
         self.lock = threading.Lock()
         self.start_time = time.time()
+        self._record()
     
-    def acquire(self, required_cpu: float):
+    def _acquire(self, required_cpu: float):
         """Добавить нагрузку"""
         with self.lock:
             if self.current_load + required_cpu <= self.max_capacity:
                 self.current_load += required_cpu
                 self.max_load = max(self.max_load, self.current_load)
-                self._record()
                 return True
-            self._record()
             return False
     
     def release(self, load: float):
@@ -43,11 +43,11 @@ class CpuManager:
         """Ждать пока не освободится достаточно ресурсов"""
         while True:
             with self.lock:
-                if self.current_usage + required_cpu <= self.max_capacity:
-                    self.current_usage += required_cpu
+                if self._acquire(required_cpu):
+                    self._record()
                     return
             # Ждем немного перед повторной проверкой
-            time.sleep(0.01)
+            time.sleep(T_WAIT)
     
     def _record(self):
         """Записать текущее состояние"""
@@ -63,5 +63,6 @@ class CpuManager:
                 'max': self.max_load,
                 'avg': avg_load,
                 'history': self.load_history.copy(),
-                'timestamps': self.timestamps.copy()
-            }
+                'timestamps': self.timestamps.copy()}
+
+cpu_manager = CpuManager()
