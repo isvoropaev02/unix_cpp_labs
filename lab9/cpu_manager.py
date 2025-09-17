@@ -22,12 +22,13 @@ class CpuManager:
         self.start_time = time.time()
         self._record()
     
-    def _acquire(self, required_cpu: float):
+    def acquire(self, required_cpu: float):
         """Добавить нагрузку"""
         with self.lock:
             if self.current_load + required_cpu <= self.max_capacity:
                 self.current_load += required_cpu
                 self.max_load = max(self.max_load, self.current_load)
+                self._record()
                 return True
             return False
     
@@ -43,8 +44,7 @@ class CpuManager:
         """Ждать пока не освободится достаточно ресурсов"""
         while True:
             with self.lock:
-                if self._acquire(required_cpu):
-                    self._record()
+                if self.acquire(required_cpu):
                     return
             # Ждем немного перед повторной проверкой
             time.sleep(T_WAIT)

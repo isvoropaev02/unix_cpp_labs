@@ -42,22 +42,14 @@ class UserRequest:
     
     async def process_request_async(self) -> RequestResult:
         start_time = time.time()
-        
-        # Имитация асинхронной обработки
-        if self.action_type == 1:
-            await asyncio.sleep(0.5)
-            cpu_load = 0.25
-        elif self.action_type == 2:
-            await asyncio.sleep(0.3)
-            cpu_load = 0.15
-        elif self.action_type == 3:
-            await asyncio.sleep(0.1)
-            cpu_load = 0.01
-        else:
-            cpu_load = 0.0
-        
+        if CPU_MANAGER_ENABLE:
+            while not cpu_manager.acquire(self.required_cpu):
+                await asyncio.sleep(T_WAIT)
+        await asyncio.sleep(self.processing_time)
         processing_time = time.time() - start_time
-        return RequestResult(self.user_id, self.action_type, cpu_load, processing_time)
+        if CPU_MANAGER_ENABLE:
+            cpu_manager.release(self.required_cpu)
+        return RequestResult(self.user_id, self.action_type, self.required_cpu, processing_time)
 
 
 def create_requests(U1: int, U2: int, U3: int) -> List[UserRequest]:
