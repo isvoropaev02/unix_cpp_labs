@@ -17,6 +17,9 @@ C1 = 0.25  # Registration
 C2 = 0.15  # Get main page
 C3 = 0.01  # Get active users
 
+"""Number of parallel workers (threaded/multiprocess simulation)"""
+NUM_WORKERS = 4
+
 """CPU Manager settings"""
 CPU_MANAGER_ENABLE = True
 T_WAIT = 0.01
