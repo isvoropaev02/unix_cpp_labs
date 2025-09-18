@@ -17,6 +17,6 @@ C2 = 0.15  # Get main page
 C3 = 0.01  # Get active users
 
 '''CPU Manager settings'''
-CPU_MANAGER_ENABLE = False
+CPU_MANAGER_ENABLE = True
 T_WAIT = 0.01
 MAX_CAPACITY = 1.0

@@ -43,9 +43,8 @@ class CpuManager:
     def wait_for_resource(self, required_cpu: float) -> None:
         """Ждать пока не освободится достаточно ресурсов"""
         while True:
-            with self.lock:
-                if self.acquire(required_cpu):
-                    return
+            if self.acquire(required_cpu):
+                return
             # Ждем немного перед повторной проверкой
             time.sleep(T_WAIT)
     
