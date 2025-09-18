@@ -1,8 +1,10 @@
 import time
 import threading
+import matplotlib.pyplot as plt
 from dataclasses import dataclass
 from typing import List, Dict
 from sim_params import *
+
 
 @dataclass
 class CpuManager:
@@ -12,7 +14,7 @@ class CpuManager:
     timestamps: List[float]
     lock: threading.Lock
     max_capacity: float = MAX_CAPACITY
-    
+
     def __init__(self) -> None:
         self.current_load = 0.0
         self.max_load = 0.0
@@ -21,7 +23,7 @@ class CpuManager:
         self.lock = threading.Lock()
         self.start_time = time.time()
         self._record()
-    
+
     def acquire(self, required_cpu: float) -> bool:
         """Добавить нагрузку"""
         with self.lock:
@@ -31,7 +33,7 @@ class CpuManager:
                 self._record()
                 return True
             return False
-    
+
     def release(self, load: float) -> None:
         """Убрать нагрузку"""
         with self.lock:
@@ -47,7 +49,7 @@ class CpuManager:
                 return
             # Ждем немного перед повторной проверкой
             time.sleep(T_WAIT)
-    
+
     def _record(self) -> None:
         """Записать текущее состояние"""
         current_time = time.time() - self.start_time
@@ -56,15 +58,89 @@ class CpuManager:
 
     def reset(self) -> None:
         self.__init__()
-    
+
     def get_stats(self) -> Dict:
         """Получить статистику"""
         with self.lock:
-            avg_load = sum(self.load_history) / len(self.load_history) if self.load_history else 0
+            avg_load = (
+                sum(self.load_history) / len(self.load_history)
+                if self.load_history
+                else 0
+            )
             return {
-                'max': self.max_load,
-                'avg': avg_load,
-                'history': self.load_history.copy(),
-                'timestamps': self.timestamps.copy()}
+                "max": self.max_load,
+                "avg": avg_load,
+                "history": self.load_history.copy(),
+                "timestamps": self.timestamps.copy(),
+            }
+
 
 cpu_manager = CpuManager()
+
+
+def visualize_cpu_usage(
+    seq_cpu_report: Dict,
+    mp_cpu_report: Dict,
+    thread_cpu_report: Dict,
+    asyncio_cpu_report: Dict,
+) -> None:
+    fig1 = plt.figure(figsize=(13, 8))
+
+    plt.subplot(4, 1, 1)
+    plt.step(
+        seq_cpu_report["timestamps"],
+        seq_cpu_report["history"],
+        label="Sequential",
+        color="C0",
+    )
+    plt.legend()
+    plt.ylabel(
+        f"CPU usage\nMax value: {seq_cpu_report["max"]:.2f}\nAvg value: {seq_cpu_report["avg"]:.2f}",
+        rotation=0,
+    )
+    plt.grid()
+
+    plt.subplot(4, 1, 2)
+    plt.step(
+        mp_cpu_report["timestamps"],
+        mp_cpu_report["history"],
+        label="Multiprocess",
+        color="C1",
+    )
+    plt.legend()
+    plt.ylabel(
+        f"CPU usage\nMax value: {mp_cpu_report["max"]:.2f}\nAvg value: {mp_cpu_report["avg"]:.2f}",
+        rotation=0,
+    )
+    plt.grid()
+
+    plt.subplot(4, 1, 3)
+    plt.step(
+        thread_cpu_report["timestamps"],
+        thread_cpu_report["history"],
+        label="Threaded",
+        color="C2",
+    )
+    plt.legend()
+    plt.ylabel(
+        f"CPU usage\nMax value: {thread_cpu_report["max"]:.2f}\nAvg value: {thread_cpu_report["avg"]:.2f}",
+        rotation=0,
+    )
+    plt.grid()
+
+    plt.subplot(4, 1, 4)
+    plt.step(
+        asyncio_cpu_report["timestamps"],
+        asyncio_cpu_report["history"],
+        label="Async",
+        color="C3",
+    )
+    plt.ylabel(
+        f"CPU usage\nMax value: {asyncio_cpu_report["max"]:.2f}\nAvg value: {asyncio_cpu_report["avg"]:.2f}",
+        rotation=0,
+    )
+    plt.grid()
+    plt.xlabel("Time [s]")
+    plt.legend()
+    plt.suptitle("CPU usage history")
+    fig1.savefig("lab9/cpu_report.png", transparent=False)
