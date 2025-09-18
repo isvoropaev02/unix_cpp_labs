@@ -1,10 +1,12 @@
 import time
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 from user_request import UserRequest
+from cpu_manager import cpu_manager, CPU_MANAGER_ENABLE
 
 
-def sequential_simulation(requests: List[UserRequest]) -> Tuple[float, float]:
-
+def sequential_simulation(requests: List[UserRequest]) -> Tuple[float, float, Dict]:
+    if CPU_MANAGER_ENABLE:
+        cpu_manager.reset()
     total_cpu = 0.0
     start_time = time.time()
 
@@ -20,4 +22,4 @@ def sequential_simulation(requests: List[UserRequest]) -> Tuple[float, float]:
     print(f"\nSequential - Total time: {total_time:.3f}s, "
           f"Avg CPU: {avg_cpu*100:.1f}%")
 
-    return total_time, avg_cpu
+    return total_time, avg_cpu, cpu_manager.get_stats()

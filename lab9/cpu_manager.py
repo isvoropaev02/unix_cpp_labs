@@ -1,7 +1,7 @@
 import time
 import threading
 from dataclasses import dataclass
-from typing import List
+from typing import List, Dict
 from sim_params import *
 
 @dataclass
@@ -13,7 +13,7 @@ class CpuManager:
     lock: threading.Lock
     max_capacity: float = MAX_CAPACITY
     
-    def __init__(self):
+    def __init__(self) -> None:
         self.current_load = 0.0
         self.max_load = 0.0
         self.load_history = []
@@ -22,7 +22,7 @@ class CpuManager:
         self.start_time = time.time()
         self._record()
     
-    def acquire(self, required_cpu: float):
+    def acquire(self, required_cpu: float) -> bool:
         """Добавить нагрузку"""
         with self.lock:
             if self.current_load + required_cpu <= self.max_capacity:
@@ -32,7 +32,7 @@ class CpuManager:
                 return True
             return False
     
-    def release(self, load: float):
+    def release(self, load: float) -> None:
         """Убрать нагрузку"""
         with self.lock:
             self.current_load -= load
@@ -40,7 +40,7 @@ class CpuManager:
                 self.current_load = 0
             self._record()
 
-    def wait_for_resource(self, required_cpu: float):
+    def wait_for_resource(self, required_cpu: float) -> None:
         """Ждать пока не освободится достаточно ресурсов"""
         while True:
             with self.lock:
@@ -49,13 +49,16 @@ class CpuManager:
             # Ждем немного перед повторной проверкой
             time.sleep(T_WAIT)
     
-    def _record(self):
+    def _record(self) -> None:
         """Записать текущее состояние"""
         current_time = time.time() - self.start_time
         self.load_history.append(self.current_load)
         self.timestamps.append(current_time)
+
+    def reset(self) -> None:
+        self.__init__()
     
-    def get_stats(self):
+    def get_stats(self) -> Dict:
         """Получить статистику"""
         with self.lock:
             avg_load = sum(self.load_history) / len(self.load_history) if self.load_history else 0

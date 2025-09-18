@@ -1,7 +1,8 @@
 import time
 import multiprocessing as mp
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 from user_request import UserRequest, RequestResult
+from cpu_manager import cpu_manager, CPU_MANAGER_ENABLE
 
 
 def process_worker(request: UserRequest) -> RequestResult:
@@ -10,7 +11,9 @@ def process_worker(request: UserRequest) -> RequestResult:
           f"time: {result.processing_time:.3f}s, CPU: {result.cpu_load*100:.1f}%")
     return result
 
-def multiprocess_simulation(requests: List[UserRequest], num_proc: int = 4) -> Tuple[float, float]:
+def multiprocess_simulation(requests: List[UserRequest], num_proc: int = 4) -> Tuple[float, float, Dict]:
+    if CPU_MANAGER_ENABLE:
+        cpu_manager.reset()
     start_time = time.time()
     
     with mp.Pool(processes=num_proc) as pool:
@@ -23,4 +26,4 @@ def multiprocess_simulation(requests: List[UserRequest], num_proc: int = 4) -> T
     print(f"\nMultiprocess - Total time: {total_time:.3f}s, "
           f"Avg CPU: {avg_cpu*100:.1f}%")
     
-    return total_time, avg_cpu
+    return total_time, avg_cpu, cpu_manager.get_stats()

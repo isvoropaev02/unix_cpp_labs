@@ -1,10 +1,13 @@
 
 import time
 import asyncio
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 from user_request import UserRequest
+from cpu_manager import cpu_manager, CPU_MANAGER_ENABLE
 
-async def asyncio_simulation(requests: List[UserRequest]) -> Tuple[float, float]:
+async def asyncio_simulation(requests: List[UserRequest]) -> Tuple[float, float, Dict]:
+    if CPU_MANAGER_ENABLE:
+        cpu_manager.reset()
     tasks = [request.process_request_async() for request in requests]
     
     start_time = time.time()
@@ -21,4 +24,4 @@ async def asyncio_simulation(requests: List[UserRequest]) -> Tuple[float, float]
     print(f"\nAsyncio - Total time: {total_time:.3f}s, "
           f"Avg CPU: {avg_cpu*100:.1f}%")
     
-    return total_time, avg_cpu
+    return total_time, avg_cpu, cpu_manager.get_stats()
