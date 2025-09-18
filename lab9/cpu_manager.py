@@ -92,6 +92,7 @@ def visualize_cpu_usage(
         seq_cpu_report["history"],
         label="Sequential",
         color="C0",
+        where="post",
     )
     plt.legend()
     plt.ylabel(
@@ -99,6 +100,7 @@ def visualize_cpu_usage(
         rotation=0,
     )
     plt.grid()
+    plt.gca().yaxis.set_label_coords(-0.10, 0.5)
 
     plt.subplot(4, 1, 2)
     plt.step(
@@ -106,6 +108,7 @@ def visualize_cpu_usage(
         mp_cpu_report["history"],
         label="Multiprocess",
         color="C1",
+        where="post",
     )
     plt.legend()
     plt.ylabel(
@@ -113,6 +116,7 @@ def visualize_cpu_usage(
         rotation=0,
     )
     plt.grid()
+    plt.gca().yaxis.set_label_coords(-0.10, 0.5)
 
     plt.subplot(4, 1, 3)
     plt.step(
@@ -120,6 +124,7 @@ def visualize_cpu_usage(
         thread_cpu_report["history"],
         label="Threaded",
         color="C2",
+        where="post",
     )
     plt.legend()
     plt.ylabel(
@@ -127,6 +132,7 @@ def visualize_cpu_usage(
         rotation=0,
     )
     plt.grid()
+    plt.gca().yaxis.set_label_coords(-0.10, 0.5)
 
     plt.subplot(4, 1, 4)
     plt.step(
@@ -134,12 +140,14 @@ def visualize_cpu_usage(
         asyncio_cpu_report["history"],
         label="Async",
         color="C3",
+        where="post",
     )
     plt.ylabel(
         f"CPU usage\nMax value: {asyncio_cpu_report["max"]:.2f}\nAvg value: {asyncio_cpu_report["avg"]:.2f}",
         rotation=0,
     )
     plt.grid()
+    plt.gca().yaxis.set_label_coords(-0.10, 0.5)
     plt.xlabel("Time [s]")
     plt.legend()
     plt.suptitle("CPU usage history")
