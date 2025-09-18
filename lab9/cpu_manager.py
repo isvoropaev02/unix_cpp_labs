@@ -2,6 +2,7 @@ import time
 import threading
 import matplotlib.pyplot as plt
 import numpy as np
+from multiprocessing import Manager, Lock, Value, Array
 from dataclasses import dataclass
 from typing import List, Dict
 from sim_params import *
@@ -60,20 +61,20 @@ class CpuManager:
     def reset(self) -> None:
         self.__init__()
 
-    def _get_avg_load(self) -> float:
-        if len(self.timestamps) == 1:
-            return 0.0
-        integral = 0
-        for i in range(0, len(self.load_history) - 1):
-            integral += self.load_history[i] * (
-                self.timestamps[i + 1] - self.timestamps[i]
-            )
-        return integral / self.timestamps[-1]
-
     def get_stats(self) -> Dict:
         """Получить статистику"""
         with self.lock:
-            avg_load = self._get_avg_load()
+            if len(self.timestamps) <= 1:
+                avg_load = 0.0
+            else:
+                integral = 0.0
+                for i in range(len(self.load_history) - 1):
+                    integral += self.load_history[i] * (
+                        self.timestamps[i + 1] - self.timestamps[i]
+                    )
+                avg_load = (
+                    integral / self.timestamps[-1] if self.timestamps[-1] > 0 else 0.0
+                )
             return {
                 "max": self.max_load,
                 "avg": avg_load,
@@ -82,7 +83,79 @@ class CpuManager:
             }
 
 
+class SharedCpuManager:
+    """CpuManager с разделяемой памятью для multiprocessing"""
+
+    def __init__(self) -> None:
+        # Используем Manager для разделяемых объектов
+        self.manager = Manager()
+        # Разделяемые переменные
+        self.current_load = Value("d", 0.0)
+        self.max_load = Value("d", 0.0)
+        self.max_capacity = Value("d", MAX_CAPACITY)
+        self.start_time = Value("d", time.time())
+        self.lock = Lock()
+
+        # Разделяемые списки для истории
+        self.load_history = self.manager.list()
+        self.timestamps = self.manager.list()
+
+    def acquire(self, required_cpu: float) -> bool:
+        """Потокобезопасное добавление нагрузки"""
+        with self.lock:
+            if self.current_load.value + required_cpu <= self.max_capacity.value:
+                self.current_load.value += required_cpu
+                self.max_load.value = max(self.max_load.value, self.current_load.value)
+                self._record()
+                return True
+            return False
+
+    def release(self, load: float) -> None:
+        """Потокобезопасное освобождение нагрузки"""
+        with self.lock:
+            self.current_load.value -= load
+            if self.current_load.value < 0:
+                self.current_load.value = 0
+            self._record()
+
+    def _record(self) -> None:
+        """Запись текущего состояния"""
+        current_time = time.time() - self.start_time.value
+        self.load_history.append(self.current_load.value)
+        self.timestamps.append(current_time)
+
+    def wait_for_resource(self, required_cpu: float) -> None:
+        """Ожидание ресурсов"""
+        while not self.acquire(required_cpu):
+            time.sleep(0.001)
+
+    def get_stats(self) -> Dict:
+        """Получение статистики"""
+        with self.lock:
+            load_history = list(self.load_history)
+            timestamps = list(self.timestamps)
+
+            if len(timestamps) <= 1:
+                avg_load = 0.0
+            else:
+                integral = 0.0
+                for i in range(len(load_history) - 1):
+                    integral += load_history[i] * (timestamps[i + 1] - timestamps[i])
+                avg_load = integral / timestamps[-1] if timestamps[-1] > 0 else 0.0
+
+            return {
+                "max": self.max_load.value,
+                "avg": avg_load,
+                "history": load_history,
+                "timestamps": timestamps,
+            }
+
+    def reset(self) -> None:
+        self.__init__()
+
+
 cpu_manager = CpuManager()
+shared_cpu_manager = SharedCpuManager()
 
 
 def visualize_cpu_usage(

@@ -5,7 +5,7 @@ from async_server import asyncio_simulation
 from cpu_manager import visualize_cpu_usage
 from sim_params import SEED, CPU_MANAGER_ENABLE
 from user_request import *
-from random import shuffle, seed
+from random import seed
 
 
 def main():
