@@ -36,10 +36,10 @@ def main():
     print(f"{'Threaded':<12} {thread_time:<10.3f} {thread_cpu*100:<12.1f}")
     print(f"{'Asyncio':<12} {asyncio_time:<10.3f} {asyncio_cpu*100:<12.1f}")
 
-    print(seq_cpu_report)
-    print(mp_cpu_report)
-    print(thread_cpu_report)
-    print(asyncio_cpu_report)
+    # print(seq_cpu_report)
+    # print(mp_cpu_report)
+    # print(thread_cpu_report)
+    # print(asyncio_cpu_report)
     visualize_cpu_usage(
         seq_cpu_report=seq_cpu_report,
         mp_cpu_report=mp_cpu_report,
