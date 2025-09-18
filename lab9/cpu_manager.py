@@ -1,6 +1,7 @@
 import time
 import threading
 import matplotlib.pyplot as plt
+import numpy as np
 from dataclasses import dataclass
 from typing import List, Dict
 from sim_params import *
@@ -59,14 +60,20 @@ class CpuManager:
     def reset(self) -> None:
         self.__init__()
 
+    def _get_avg_load(self) -> float:
+        if len(self.timestamps) == 1:
+            return 0.0
+        integral = 0
+        for i in range(0, len(self.load_history) - 1):
+            integral += self.load_history[i] * (
+                self.timestamps[i + 1] - self.timestamps[i]
+            )
+        return integral / self.timestamps[-1]
+
     def get_stats(self) -> Dict:
         """Получить статистику"""
         with self.lock:
-            avg_load = (
-                sum(self.load_history) / len(self.load_history)
-                if self.load_history
-                else 0
-            )
+            avg_load = self._get_avg_load()
             return {
                 "max": self.max_load,
                 "avg": avg_load,
@@ -89,14 +96,14 @@ def visualize_cpu_usage(
     plt.subplot(4, 1, 1)
     plt.step(
         seq_cpu_report["timestamps"],
-        seq_cpu_report["history"],
+        np.array(seq_cpu_report["history"]) * 100,
         label="Sequential",
         color="C0",
         where="post",
     )
     plt.legend()
     plt.ylabel(
-        f"CPU usage\nMax value: {seq_cpu_report["max"]:.2f}\nAvg value: {seq_cpu_report["avg"]:.2f}",
+        f"CPU usage [%]\nMax value: {seq_cpu_report["max"]:.2f}\nAvg value: {seq_cpu_report["avg"]:.2f}",
         rotation=0,
     )
     plt.grid()
@@ -105,14 +112,14 @@ def visualize_cpu_usage(
     plt.subplot(4, 1, 2)
     plt.step(
         mp_cpu_report["timestamps"],
-        mp_cpu_report["history"],
+        np.array(mp_cpu_report["history"]) * 100,
         label="Multiprocess",
         color="C1",
         where="post",
     )
     plt.legend()
     plt.ylabel(
-        f"CPU usage\nMax value: {mp_cpu_report["max"]:.2f}\nAvg value: {mp_cpu_report["avg"]:.2f}",
+        f"CPU usage [%]\nMax value: {mp_cpu_report["max"]:.2f}\nAvg value: {mp_cpu_report["avg"]:.2f}",
         rotation=0,
     )
     plt.grid()
@@ -121,14 +128,14 @@ def visualize_cpu_usage(
     plt.subplot(4, 1, 3)
     plt.step(
         thread_cpu_report["timestamps"],
-        thread_cpu_report["history"],
+        np.array(thread_cpu_report["history"]) * 100,
         label="Threaded",
         color="C2",
         where="post",
     )
     plt.legend()
     plt.ylabel(
-        f"CPU usage\nMax value: {thread_cpu_report["max"]:.2f}\nAvg value: {thread_cpu_report["avg"]:.2f}",
+        f"CPU usage [%]\nMax value: {thread_cpu_report["max"]:.2f}\nAvg value: {thread_cpu_report["avg"]:.2f}",
         rotation=0,
     )
     plt.grid()
@@ -137,13 +144,13 @@ def visualize_cpu_usage(
     plt.subplot(4, 1, 4)
     plt.step(
         asyncio_cpu_report["timestamps"],
-        asyncio_cpu_report["history"],
+        np.array(asyncio_cpu_report["history"]) * 100,
         label="Async",
         color="C3",
         where="post",
     )
     plt.ylabel(
-        f"CPU usage\nMax value: {asyncio_cpu_report["max"]:.2f}\nAvg value: {asyncio_cpu_report["avg"]:.2f}",
+        f"CPU usage [%]\nMax value: {asyncio_cpu_report["max"]:.2f}\nAvg value: {asyncio_cpu_report["avg"]:.2f}",
         rotation=0,
     )
     plt.grid()
