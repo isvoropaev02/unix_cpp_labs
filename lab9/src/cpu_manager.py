@@ -231,4 +231,4 @@ def visualize_cpu_usage(
     plt.xlabel("Time [s]")
     plt.legend()
     plt.suptitle("CPU usage history")
-    fig1.savefig("lab9/src/cpu_report.png", transparent=False)
+    fig1.savefig(OUTPUT_SAVE_PATH, transparent=False)

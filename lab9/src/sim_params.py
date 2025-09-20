@@ -24,3 +24,14 @@ NUM_WORKERS = 4
 CPU_MANAGER_ENABLE = True
 T_WAIT = 0.01
 MAX_CAPACITY = 1.0
+OUTPUT_SAVE_PATH = (
+    "lab9/doc/cpu_report_"
+    + str(U1)
+    + "_"
+    + str(U2)
+    + "_"
+    + str(U3)
+    + "_nworkers"
+    + str(NUM_WORKERS)
+    + ".png"
+)
