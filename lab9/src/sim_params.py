@@ -3,9 +3,9 @@
 SEED = 0
 
 """Number of requests of each type"""
-U1 = 3  # good example with U1=U2=U3=1
+U1 = 10
 U2 = 5
-U3 = 10
+U3 = 3
 
 """Processing time of requests of each type"""
 T1 = 0.5  # Registration
