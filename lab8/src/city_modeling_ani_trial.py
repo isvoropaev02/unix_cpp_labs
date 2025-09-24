@@ -1,27 +1,27 @@
 from city_elements import *
-from vehicle_route_generator import VehicleGenerator
+from vehicle_generator import VehicleGenerator
 from SPB import SPB_CR, SPB_ROADS
 from city_plots import plot_spb_map_with_traffic
-
-import numpy as np
-import matplotlib.pyplot as plt
-import cv2
 from datetime import timedelta
 from random import seed
+import numpy as np
+import matplotlib.pyplot as plt
 
-'''Simulation configuration'''
+"""Simulation configuration"""
 seed(0)
 CROSS_ROADS = SPB_CR
 ROADS = SPB_ROADS
 CARS = dict()
-SIM_DURATION = 600      # sec
-DELTA_T = 3             # sec
+SIM_DURATION = 600  # sec
+DELTA_T = 3  # sec
 CAR_SPAWN_RATE = 100 * DELTA_T  # every x seconds a new car appears
-CAR_ROUTE_LENGHT = 25    # num of roads in route
-JAM_THRESHOLD = 35      # % from all active cars
+CAR_ROUTE_LENGHT = 25  # num of roads in route
+JAM_THRESHOLD = 35  # % from all active cars
 
 
-def get_cars_coords(cross_roads: list[CrossRoad], roads: list[Road], cars: dict[int, Vehicle]) -> list[list[float]]:
+def get_cars_coords(
+    cross_roads: list[CrossRoad], roads: list[Road], cars: dict[int, Vehicle]
+) -> list[list[float]]:
     out_coords = []
     offset = 10
     for car in cars.values():
@@ -31,20 +31,19 @@ def get_cars_coords(cross_roads: list[CrossRoad], roads: list[Road], cars: dict[
         cr1 = cross_roads[road_tmp.node_to_id]
         if not direct_flow:
             cr0, cr1 = cr1, cr0
-        n_vec = np.array([cr1.y-cr0.y, cr0.x-cr1.x], dtype=np.float32)
+        n_vec = np.array([cr1.y - cr0.y, cr0.x - cr1.x], dtype=np.float32)
         full_dist = np.linalg.norm(n_vec)
         n_vec = offset * n_vec / full_dist
-        xr = car.remaining_dist * (cr1.x-cr0.x) / full_dist
-        yr = car.remaining_dist * (cr1.y-cr0.y) / full_dist
-        out_coords.append(list([cr1.x-xr + n_vec[0], cr1.y-yr+n_vec[1]]))
+        xr = car.remaining_dist * (cr1.x - cr0.x) / full_dist
+        yr = car.remaining_dist * (cr1.y - cr0.y) / full_dist
+        out_coords.append(list([cr1.x - xr + n_vec[0], cr1.y - yr + n_vec[1]]))
     return out_coords
 
 
-'''Simulation variables'''
+"""Simulation variables"""
 next_car_id = 0
 time_vec = np.arange(0, SIM_DURATION, step=DELTA_T, dtype=np.int32)
-roads_state_vec = np.empty(
-    shape=(time_vec.shape[0], len(ROADS), 2), dtype=np.int32)
+roads_state_vec = np.empty(shape=(time_vec.shape[0], len(ROADS), 2), dtype=np.int32)
 route_gen = VehicleGenerator(CAR_ROUTE_LENGHT)
 # initial cars
 for _ in range(20):
@@ -55,14 +54,14 @@ for _ in range(20):
     next_car_id += 1
 
 
-'''Activating interactive city plot'''
+"""Activating interactive city plot"""
 plt.ion()
-plot_spb_map_with_traffic(CROSS_ROADS, ROADS, {})
+plot_spb_map_with_traffic(CROSS_ROADS, ROADS, CARS)
 fig, ax = plt.gcf(), plt.gca()
-sctr_plt = ax.scatter([], [], c='k', marker='.', zorder=3)  # no cars yet
-jam_streets_plt = ax.plot([], [], color='red', zorder=2)  # no traffic jams yet
+sctr_plt = ax.scatter([], [], c="k", marker=".", zorder=3)  # no cars yet
+jam_streets_plt = ax.plot([], [], color="red", zorder=2)  # no traffic jams yet
 fig.suptitle("Saint-Petersburg")
-abs_time = timedelta(hours=14, minutes=15, seconds=0)  # 9:00:00
+abs_time = timedelta(hours=14, minutes=15, seconds=0)
 ax.set_title("Local time: " + str(abs_time))
 
 for i_time, global_time_s in enumerate(time_vec):
@@ -98,11 +97,14 @@ for i_time, global_time_s in enumerate(time_vec):
     for id, node in enumerate(CROSS_ROADS):
         node.update(DELTA_T)
     for id, road in enumerate(ROADS):
-        roads_state_vec[i_time][id][0], roads_state_vec[i_time][id][1] = road.get_road_state()
+        roads_state_vec[i_time][id][0], roads_state_vec[i_time][id][1] = (
+            road.get_road_state()
+        )
 
     sctr_plt.set_offsets(get_cars_coords(CROSS_ROADS, ROADS, CARS))
-    ax.set_title("Local time: " + str(abs_time +
-                 timedelta(seconds=float(global_time_s))))
+    ax.set_title(
+        "Local time: " + str(abs_time + timedelta(seconds=float(global_time_s)))
+    )
     fig.canvas.draw_idle()
     plt.pause(0.2)
 
