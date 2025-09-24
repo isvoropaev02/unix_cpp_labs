@@ -1,4 +1,4 @@
-from road_elements import *
+from city_elements import *
 from random import randint
 
 
@@ -29,5 +29,5 @@ class VehicleGenerator:
             nodes.append(next_node_id)
             start_node_id, start_node = next_node_id, next_node
         speed = randint(5, 50)
-        print(nodes, roads, speed)
+        # print(nodes, roads, speed)
         return Vehicle(nodes, roads, speed)

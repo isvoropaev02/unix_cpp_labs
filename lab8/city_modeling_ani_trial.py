@@ -1,4 +1,4 @@
-from road_elements import *
+from city_elements import *
 from vehicle_route_generator import VehicleGenerator
 from SPB import SPB_CR, SPB_ROADS
 from city_plots import plot_spb_map_with_traffic
@@ -7,16 +7,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 from datetime import timedelta
-
+from random import seed
 
 '''Simulation configuration'''
+seed(0)
 CROSS_ROADS = SPB_CR
 ROADS = SPB_ROADS
 CARS = dict()
 SIM_DURATION = 600      # sec
 DELTA_T = 3             # sec
-CAR_SPAWN_RATE = 1 * DELTA_T  # every x seconds a new car appears
-CAR_ROUTE_LENGHT = 14    # num of roads in route
+CAR_SPAWN_RATE = 100 * DELTA_T  # every x seconds a new car appears
+CAR_ROUTE_LENGHT = 25    # num of roads in route
+JAM_THRESHOLD = 35      # % from all active cars
 
 
 def get_cars_coords(cross_roads: list[CrossRoad], roads: list[Road], cars: dict[int, Vehicle]) -> list[list[float]]:
@@ -44,12 +46,21 @@ time_vec = np.arange(0, SIM_DURATION, step=DELTA_T, dtype=np.int32)
 roads_state_vec = np.empty(
     shape=(time_vec.shape[0], len(ROADS), 2), dtype=np.int32)
 route_gen = VehicleGenerator(CAR_ROUTE_LENGHT)
+# initial cars
+for _ in range(20):
+    CARS.update({next_car_id: route_gen.generate(ROADS, CROSS_ROADS)})
+    road_id = CARS[next_car_id].curr_road_id
+    direct_flow = CARS[next_car_id].curr_road_direct_flow
+    ROADS[road_id].add_car_to_road(next_car_id, direct_flow)
+    next_car_id += 1
+
 
 '''Activating interactive city plot'''
 plt.ion()
-plot_spb_map_with_traffic(CROSS_ROADS, ROADS, CARS)
+plot_spb_map_with_traffic(CROSS_ROADS, ROADS, {})
 fig, ax = plt.gcf(), plt.gca()
 sctr_plt = ax.scatter([], [], c='k', marker='.', zorder=3)  # no cars yet
+jam_streets_plt = ax.plot([], [], color='red', zorder=2)  # no traffic jams yet
 fig.suptitle("Saint-Petersburg")
 abs_time = timedelta(hours=14, minutes=15, seconds=0)  # 9:00:00
 ax.set_title("Local time: " + str(abs_time))
@@ -62,6 +73,7 @@ for i_time, global_time_s in enumerate(time_vec):
         ROADS[road_id].add_car_to_road(next_car_id, direct_flow)
         next_car_id += 1
     finished_cars_id = list([])
+    jam_streets_for_plot = []
     for id, car in CARS.items():
         car.update(DELTA_T)
         ready_to_switch_road = car.ready_to_switch_road
@@ -87,7 +99,7 @@ for i_time, global_time_s in enumerate(time_vec):
         node.update(DELTA_T)
     for id, road in enumerate(ROADS):
         roads_state_vec[i_time][id][0], roads_state_vec[i_time][id][1] = road.get_road_state()
-    # print()
+
     sctr_plt.set_offsets(get_cars_coords(CROSS_ROADS, ROADS, CARS))
     ax.set_title("Local time: " + str(abs_time +
                  timedelta(seconds=float(global_time_s))))

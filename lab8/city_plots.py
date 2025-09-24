@@ -1,6 +1,6 @@
 import cv2
 import matplotlib.pyplot as plt
-from road_elements import *
+from city_elements import *
 from SPB import *
 import numpy as np
 
@@ -82,9 +82,9 @@ def plot_spb_map_with_traffic(cross_roads: list[CrossRoad], roads: list[Road], c
         n_vec = np.array([cr1.y-cr0.y, cr0.x-cr1.x], dtype=np.float32)
         n_vec = offset * n_vec / np.linalg.norm(n_vec)
         plt.plot(np.array([cr0.x + n_vec[0], cr1.x + n_vec[0]], dtype=np.float32), np.array(
-            [cr0.y + n_vec[1], cr1.y + n_vec[1]], dtype=np.float32), color='chocolate', zorder=2)
+            [cr0.y + n_vec[1], cr1.y + n_vec[1]], dtype=np.float32), color='darkolivegreen', zorder=2)
         plt.plot(np.array([cr0.x - n_vec[0], cr1.x - n_vec[0]], dtype=np.float32), np.array(
-            [cr0.y - n_vec[1], cr1.y - n_vec[1]], dtype=np.float32), color='chocolate', linestyle='--', zorder=2)
+            [cr0.y - n_vec[1], cr1.y - n_vec[1]], dtype=np.float32), color='darkolivegreen', linestyle='--', zorder=2)
 
     for i, cr in enumerate(cross_roads):
         plt.scatter([cr.x], [cr.y], c='royalblue', zorder=3)
