@@ -1,7 +1,9 @@
 from SPB import SPB_CR, SPB_ROADS
 from city import City, SimParams
+from post_processing import PostProcessor
 from random import seed
 import numpy as np
+import matplotlib.pyplot as plt
 
 seed(1)
 
@@ -17,14 +19,6 @@ city_model = City(nodes=SPB_CR, roads=SPB_ROADS, cars={}, sim_params=sim_params)
 
 time_vec, road_states = city_model.run_simulation()
 
-
-def calculate_mean_load(road_load_sample: np.ndarray) -> np.ndarray:
-    return np.round(np.mean(np.sum(road_load_sample, axis=2), axis=0), 1)
-
-
-def get_roads_with_most_load_at_the_start(road_load_sample: np.ndarray) -> np.ndarray:
-    return np.argsort(np.sum(road_load_sample[0], axis=1))[-10:][::-1]
-
-
-print("most start load ids:\n", get_roads_with_most_load_at_the_start(road_states))
-print("mean load:\n", calculate_mean_load(road_states))
+post_proc = PostProcessor(time_vec, road_states, threshold=25)
+post_proc.plot_report()
+post_proc.calculate_mean_load(en_plot=True)
