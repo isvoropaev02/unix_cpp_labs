@@ -54,6 +54,7 @@ class City:
             out_coords.append(list([cr1.x - xr + n_vec[0], cr1.y - yr + n_vec[1]]))
         return out_coords
 
+    # legacy
     def __get_road_load_percentage(self) -> List[List[float]]:
         road_load_percentage = len(self.roads) * [[0.0, 0.0]]
         total_active_cars = len(self.cars)
@@ -64,6 +65,12 @@ class City:
                 inv_num_cars / total_active_cars * 100,
             ]
         return road_load_percentage
+
+    def __get_road_cars_num(self) -> List[List[int]]:
+        road_cars_num = len(self.roads) * [[0, 0]]
+        for i, road in enumerate(self.roads):
+            road_cars_num[i] = list(road.get_road_state())
+        return road_cars_num
 
     def __update_cars(self, new_car: Vehicle) -> None:
         self.cars.update({self.next_car_id: new_car})
@@ -76,7 +83,6 @@ class City:
         # initial cars
         for _ in range(self.sim_params.num_initial_cars):
             self.__update_cars(self.route_gen.generate(self.roads, self.nodes))
-        return
 
     def reset_cars(self) -> None:
         self.__init__(
@@ -139,7 +145,8 @@ class City:
                 node.update(self.sim_params.delta_t)
             for id, road in enumerate(self.roads):
                 # roads_state_vec[i_time][id][0], roads_state_vec[i_time][id][1] = road.get_road_state()
-                roads_state_vec[i_time] = self.__get_road_load_percentage()
+                # roads_state_vec[i_time] = self.__get_road_load_percentage()
+                roads_state_vec[i_time] = self.__get_road_cars_num()
 
             if en_plot:
                 sctr_plt.set_offsets(self.get_cars_coords())
