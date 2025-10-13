@@ -8,7 +8,7 @@ seed(1)
 sim_params = SimParams(
     sim_duration=600,
     delta_t=3,
-    car_spawn_rate=6,
+    car_spawn_rate=600,
     car_route_length=25,
     num_initial_cars=400,
     en_city_plot=False,
@@ -17,6 +17,6 @@ city_model = City(nodes=SPB_CR, roads=SPB_ROADS, cars={}, sim_params=sim_params)
 
 time_vec, road_states = city_model.run_simulation()
 
-post_proc = PostProcessor(time_vec, road_states, threshold=25)
+post_proc = PostProcessor(time_vec, road_states, attenuation=0.80)
 t_erasure = post_proc.get_t_erasure(en_plot=True)
 post_proc.calculate_mean_load(en_plot=True)

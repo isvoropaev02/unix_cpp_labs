@@ -4,12 +4,12 @@ import matplotlib.pyplot as plt
 
 class PostProcessor:
     def __init__(
-        self, timestamps: np.ndarray, road_states: np.ndarray, threshold: float = 25
+        self, timestamps: np.ndarray, road_states: np.ndarray, attenuation: float = 0.8
     ) -> None:
         assert timestamps.shape[0] == road_states.shape[0]
         self.__times = timestamps.copy()
         self.__state = road_states.copy()
-        self.__threshold = threshold
+        self.__attenuation = attenuation
 
     def calculate_mean_load(self, en_plot: bool = False) -> np.ndarray:
         mean_data = np.round(np.mean(np.sum(self.__state, axis=2), axis=0), 1)
@@ -61,7 +61,8 @@ class PostProcessor:
             / np.sum(combined_states, axis=1)
         )
         indices = np.where(
-            initial_top_load_roads_percentage_evolution < self.__threshold
+            initial_top_load_roads_percentage_evolution
+            < (self.__attenuation * initial_top_load_roads_percentage_evolution[0])
         )[0]
         er_time = float(self.__times[-1])
         if len(indices) > 0:

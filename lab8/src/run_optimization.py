@@ -35,9 +35,14 @@ def rand_search_duration(
         )
         city_model.customize_nodes_traffic_lights(durations_s)
         time_vec, road_states = city_model.run_simulation()
-        post_proc = PostProcessor(time_vec, road_states, threshold=25)
+        post_proc = PostProcessor(time_vec, road_states, attenuation=0.90)
         t_erasure = post_proc.get_t_erasure(en_plot=False)
         if t_erasure < min_t_erasure:
             min_t_erasure = t_erasure
             out_durations = durations_s
     return min_t_erasure, out_durations
+
+
+min_t_erasure, opt_durations = rand_search_duration(sim_params=sim_params, num_iter=10)
+print(min_t_erasure)
+print(opt_durations)
