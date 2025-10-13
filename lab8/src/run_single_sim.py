@@ -2,8 +2,6 @@ from SPB import SPB_CR, SPB_ROADS
 from city import City, SimParams
 from post_processing import PostProcessor
 from random import seed
-import numpy as np
-import matplotlib.pyplot as plt
 
 seed(1)
 

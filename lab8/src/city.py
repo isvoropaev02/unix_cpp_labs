@@ -89,6 +89,10 @@ class City:
             nodes=self.nodes, roads=self.roads, cars={}, sim_params=self.sim_params
         )
 
+    def customize_nodes_traffic_lights(self, dur_array: np.ndarray) -> None:
+        for j_node, dur_s in enumerate(dur_array):
+            self.nodes[j_node].reset_traffic_light(dur_s=dur_s)
+
     def run_simulation(self) -> Tuple[np.ndarray, np.ndarray]:
         time_vec = np.arange(
             0,

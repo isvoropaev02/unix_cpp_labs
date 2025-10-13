@@ -41,6 +41,9 @@ class CrossRoad:
     def get_current_state(self) -> List[bool]:
         return self.port_green
 
+    def reset_traffic_light(self, dur_s: float = 20.0) -> None:
+        self.__init__((self.x, self.y), self.road_id_vs_ports, dur_s)
+
 
 class Road:
     def __init__(
