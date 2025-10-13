@@ -20,5 +20,5 @@ city_model = City(nodes=SPB_CR, roads=SPB_ROADS, cars={}, sim_params=sim_params)
 time_vec, road_states = city_model.run_simulation()
 
 post_proc = PostProcessor(time_vec, road_states, threshold=25)
-post_proc.plot_report()
+t_erasure = post_proc.get_t_erasure(en_plot=True)
 post_proc.calculate_mean_load(en_plot=True)
