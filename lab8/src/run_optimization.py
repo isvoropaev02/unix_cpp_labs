@@ -7,6 +7,7 @@ import numpy as np
 MIN_LIGHT_DUR_S = 16
 MAX_LIGHT_DUR_S = 41
 
+np.random.seed(1)
 seed(1)
 
 sim_params = SimParams(
@@ -20,13 +21,12 @@ sim_params = SimParams(
 
 
 def rand_search_duration(
-    sim_params: SimParams, num_iter: int = 20
+    sim_params: SimParams, num_iter: int = 10
 ) -> tuple[float, np.ndarray]:
-    city_model = City(nodes=SPB_CR, roads=SPB_ROADS, cars={}, sim_params=sim_params)
     out_durations = np.zeros(shape=(len(SPB_CR),), dtype=np.int32)
     min_t_erasure = sim_params.sim_duration
     for _ in range(num_iter):
-        city_model.reset_cars()
+        city_model = City(nodes=SPB_CR, roads=SPB_ROADS, cars={}, sim_params=sim_params)
         durations_s = np.random.randint(
             low=MIN_LIGHT_DUR_S,
             high=(MAX_LIGHT_DUR_S + 1),
@@ -37,12 +37,13 @@ def rand_search_duration(
         time_vec, road_states = city_model.run_simulation()
         post_proc = PostProcessor(time_vec, road_states, attenuation=0.90)
         t_erasure = post_proc.get_t_erasure(en_plot=False)
+        print(t_erasure)
         if t_erasure < min_t_erasure:
             min_t_erasure = t_erasure
             out_durations = durations_s
     return min_t_erasure, out_durations
 
 
-min_t_erasure, opt_durations = rand_search_duration(sim_params=sim_params, num_iter=10)
+min_t_erasure, opt_durations = rand_search_duration(sim_params=sim_params, num_iter=20)
 print(min_t_erasure)
 print(opt_durations)

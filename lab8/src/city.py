@@ -27,9 +27,9 @@ class City:
         sim_params: SimParams,
         offset: int = 10,
     ) -> None:
-        self.cars = cars
-        self.nodes = nodes
-        self.roads = roads
+        self.cars = cars.copy()
+        self.nodes = nodes.copy()
+        self.roads = roads.copy()
         self.road_offset = offset
         self.sim_params = sim_params
         self.next_car_id = 0
@@ -83,11 +83,6 @@ class City:
         # initial cars
         for _ in range(self.sim_params.num_initial_cars):
             self.__update_cars(self.route_gen.generate(self.roads, self.nodes))
-
-    def reset_cars(self) -> None:
-        self.__init__(
-            nodes=self.nodes, roads=self.roads, cars={}, sim_params=self.sim_params
-        )
 
     def customize_nodes_traffic_lights(self, dur_array: np.ndarray) -> None:
         for j_node, dur_s in enumerate(dur_array):
