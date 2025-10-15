@@ -44,8 +44,6 @@ def rand_search_duration(
     return min_t_erasure, out_durations
 
 
-min_t_erasure, opt_durations = rand_search_duration(
-    sim_params=sim_params, num_iter=1000
-)
+min_t_erasure, opt_durations = rand_search_duration(sim_params=sim_params, num_iter=50)
 print(min_t_erasure)
 print(opt_durations)
