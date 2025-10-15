@@ -4,6 +4,7 @@ from vehicle_generator import VehicleGenerator
 from dataclasses import dataclass
 from datetime import timedelta
 from typing import Tuple, List, Dict
+from copy import deepcopy
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -27,9 +28,9 @@ class City:
         sim_params: SimParams,
         offset: int = 10,
     ) -> None:
-        self.cars = cars.copy()
-        self.nodes = nodes.copy()
-        self.roads = roads.copy()
+        self.cars = cars
+        self.nodes = deepcopy(nodes)
+        self.roads = deepcopy(roads)
         self.road_offset = offset
         self.sim_params = sim_params
         self.next_car_id = 0

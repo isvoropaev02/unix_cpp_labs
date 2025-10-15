@@ -25,7 +25,8 @@ def rand_search_duration(
 ) -> tuple[float, np.ndarray]:
     out_durations = np.zeros(shape=(len(SPB_CR),), dtype=np.int32)
     min_t_erasure = sim_params.sim_duration
-    for _ in range(num_iter):
+    for j_iter in range(num_iter):
+        print("Running iteration: ", j_iter)
         city_model = City(nodes=SPB_CR, roads=SPB_ROADS, cars={}, sim_params=sim_params)
         durations_s = np.random.randint(
             low=MIN_LIGHT_DUR_S,
@@ -35,15 +36,16 @@ def rand_search_duration(
         )
         city_model.customize_nodes_traffic_lights(durations_s)
         time_vec, road_states = city_model.run_simulation()
-        post_proc = PostProcessor(time_vec, road_states, attenuation=0.90)
+        post_proc = PostProcessor(time_vec, road_states, attenuation=0.65)
         t_erasure = post_proc.get_t_erasure(en_plot=False)
-        print(t_erasure)
         if t_erasure < min_t_erasure:
             min_t_erasure = t_erasure
             out_durations = durations_s
     return min_t_erasure, out_durations
 
 
-min_t_erasure, opt_durations = rand_search_duration(sim_params=sim_params, num_iter=20)
+min_t_erasure, opt_durations = rand_search_duration(
+    sim_params=sim_params, num_iter=1000
+)
 print(min_t_erasure)
 print(opt_durations)
